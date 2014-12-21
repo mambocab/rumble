@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 from contextlib import contextmanager
 
 from .adaptiverun import adaptiverun
@@ -38,7 +40,7 @@ class SimpleTimeIt:
         if as_string:
             rv = []
 
-            def report(*args, sep=' ', end='\n'):
+            def report(sep=' ', end='\n', *args):
                 rv.append(sep.join(args))
                 rv.append(end)
         else:

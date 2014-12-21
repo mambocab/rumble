@@ -1,9 +1,20 @@
-from functools import lru_cache
-
+from functools import wraps
 from simpletimeit import stimeit
 
 fib_timer = stimeit.SimpleTimeIt()
 fib_timer.default_args = (3, 9, 17)
+
+def memoize(f):
+    '''memoizer for single-argument functions'''
+    _cache = {}
+    @wraps(f)
+    def wrapper(x):
+        try:
+            return _cache[x]
+        except KeyError:
+            _cache[x] = f(x)
+            return _cache[x]
+    return wrapper
 
 @fib_timer.time_this()
 def recursive(n):
@@ -14,7 +25,7 @@ def recursive(n):
     return recursive(n - 1) + recursive(n - 2)
 
 @fib_timer.time_this()
-@lru_cache(None)
+@memoize
 def memoized(n):
     if n == 0:
         return 0
@@ -37,6 +48,7 @@ def sieve(n):
     return [i for i, f in enumerate(flags) if f]
 
 @prime_timer.time_this()
+@memoize
 def memoized(n, _primes={}):
     result = []
     for i in range(2, n + 1):
