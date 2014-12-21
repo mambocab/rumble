@@ -1,4 +1,4 @@
-import stimeit
+from simpletimeit import stimeit
 
 time_args = (100, 500)
 
