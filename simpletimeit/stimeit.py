@@ -1,10 +1,11 @@
 from collections import defaultdict, namedtuple
+from contextlib import contextmanager
+from functools import wraps
+
 from adaptiverun import adaptiverun
-from datatypes import TimedFunction, Report
+from datatypes import Report, TimedFunction
 from report import generate_table
 from utils import ordered_uniques
-from functools import wraps
-from contextlib import contextmanager
 
 _stimeit_current_function = None
 dummy = object()
@@ -69,4 +70,3 @@ def reset():
 
 time_this = _module_instance.time_this
 run = _module_instance.run
-

@@ -45,5 +45,3 @@ def with_tuple(n):
 
 if __name__ == '__main__':
     stimeit.run()
-
-

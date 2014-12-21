@@ -1,5 +1,6 @@
-import stimeit
 from functools import lru_cache
+
+import stimeit
 
 fib_timer = stimeit.SimpleTimeIt()
 fib_timer.default_args = (22,)
