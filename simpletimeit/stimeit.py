@@ -23,7 +23,7 @@ class SimpleTimeIt:
         self.report_function = report_function
         self._funcs = []
 
-    def time_this(self, args=dummy, group='', ref=None):
+    def time_this(self, args=dummy, group=''):
         """A decorator. Registers the decorated function as a TimedFunction
         with this SimpleTimeIt, then leaving the function unchanged.
         """
@@ -60,7 +60,7 @@ class SimpleTimeIt:
 
                 results.append(r._replace(timedfunction=f))
 
-            report(generate_table(results))
+            report(self.report_function(generate_table(results)))
 
         return ''.join(rv) if as_string else None
 
