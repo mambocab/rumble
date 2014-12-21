@@ -2,6 +2,7 @@ import timeit
 
 from datatypes import Report
 
+
 def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
     """Copied almost entirely from the timeit source:
     https://hg.python.org/cpython/file/3.4/Lib/timeit.py

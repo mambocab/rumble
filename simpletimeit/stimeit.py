@@ -1,75 +1,72 @@
 from collections import defaultdict, namedtuple
-import timeit
-from io import StringIO
-from tabulate import tabulate
-from itertools import product
 from adaptiverun import adaptiverun
 from datatypes import TimedFunction, Report
+from report import generate_table
+from utils import ordered_uniques
+from functools import wraps
+from contextlib import contextmanager
+
+_stimeit_current_function = None
+dummy = object()
+
+@contextmanager
+def current_function(f):
+    global _stimeit_current_function
+    _stimeit_current_function = f
+    yield
+    _stimeit_current_function = None
 
 class SimpleTimeIt:
-    default_args = ()
+    def __init__(self, report_function=generate_table, default_args=()):
+        self.default_args = default_args
+        self.report_function = report_function
+        self._funcs = []
 
-    def __init__(self):
-
-        _inputs = defaultdict(list)
-        _func_names = {}
-        _group_names = []
-        _input_list = []
-
-    def time_this(self, func_input, group='', ref=None):
-        def wrapper(timed_func):
-            for val in func_input:
-                _inputs[val].append(timed_func)
-                _func_names[timed_func] = group
-                if group not in _group_names:
-                    _group_names.append(group)
-                if val not in _input_list:
-                    _input_list.append(val)
-            return timed_func
+    def time_this(self, args=dummy, group='', ref=None):
+        """A decorator. Registers the decorated function as a TimedFunction
+        with this SimpleTimeIt, then leaving the function unchanged.
+        """
+        def wrapper(f):
+            for a in self.default_args if args == dummy else args:
+                tf = TimedFunction(function=f, group=group, args=a)
+                self._funcs.append(tf)
+            return f
         return wrapper
 
-    def generate_table(self, results):
-        result_list = []
-        for g, i in product(_group_names, _input_list):
-            input_rs = [r for r in results
-                        if r.timedfunction.group == g
-                        and r.timedfunction.input == i]
-            if len(input_rs) == 0:
-                continue
+    def run(self, verbose=False, as_string=False):
+        if as_string:
+            rv = []
+            def report(*args, sep=' ', end='\n'):
+                rv.append(sep.join(args))
+                rv.append(end)
+        else:
+            report = print
 
-            input_id = '{g}: {i}'.format(g=g, i=i) if g else str(i)
-            result_list.extend([input_id, '\n', '=' * len(input_id)])
-            result_list.append('\n')
-
-            table = []
-            for r in input_rs:
-                row = [r.timedfunction.function.__name__]
-                row.append(r.best)
-                row.append('({number}, best of {repeat})'.format(
-                    number=r.number, repeat=r.repeat))
-                table.append(row)
-            result_list.append(tabulate(table, tablefmt='plain'))
-            result_list.append('\n')
-            result_list.append('\n')
-
-        return ''.join(result_list)
-
-    def run(self, verbose=False):
-        results = []
-        for i, funcs in _inputs.items():
-            for j in range(len(funcs)):
-                key = repr(i) if isinstance(i, str) else i
-                setup = ('from stimeit import _inputs\n'
-                         'test_func = _inputs[{key}][{j}]').format(key=key, j=j)
-                stmt = 'test_func({i})'.format(i=i)
+        for g in ordered_uniques(f.group for f in self._funcs):
+            results = []
+            for f in filter(lambda f: f.group == g, self._funcs):
+                key = repr(f.args) if isinstance(f.args, str) else f.args
+                setup = 'from stimeit import _stimeit_current_function'
+                stmt = '_stimeit_current_function({i})'.format(i=key)
 
                 if verbose:
-                    print('# setup:', setup, sep='\n')
-                    print('# statement:', stmt, sep='\n')
+                    report('# setup:', setup, sep='\n')
+                    report('# statement:', stmt, sep='\n')
 
-                results.append(adaptiverun(stmt, setup=setup)._replace(
-                    timedfunction=TimedFunction(function=funcs[j],
-                                                group=_func_names[funcs[j]],
-                                                input=i)))
 
-        print(generate_table(results))
+                with current_function(f.function):
+                    r = adaptiverun(stmt, setup=setup)
+
+                results.append(r._replace(timedfunction=f))
+
+            report(generate_table(results))
+
+        return ''.join(rv) if as_string else None
+
+_module_instance = SimpleTimeIt()
+def reset():
+    _module_instance = SimpleTimeIt()
+
+time_this = _module_instance.time_this
+run = _module_instance.run
+

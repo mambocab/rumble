@@ -2,7 +2,8 @@ import stimeit
 from functools import lru_cache
 
 fib_timer = stimeit.SimpleTimeIt()
-fib_timer.default_args = (3, 9, 17)
+fib_timer.default_args = (22,)
+# fib_timer.default_args = (3, 9, 17)
 
 @fib_timer.time_this()
 def recursive(n):
@@ -12,14 +13,14 @@ def recursive(n):
         return 1
     return recursive(n - 1) + recursive(n - 2)
 
-@fib_timer.time_this()
-@lru_cache(None)
-def memoized(n):
-    if n == 0:
-        return 0
-    if n in {1, 2}:
-        return 1
-    return memoized(n - 1) + memoized(n - 2)
+# @fib_timer.time_this()
+# @lru_cache(None)
+# def memoized(n):
+#     if n == 0:
+#         return 0
+#     if n in {1, 2}:
+#         return 1
+#     return memoized(n - 1) + memoized(n - 2)
 
 
 prime_timer = stimeit.SimpleTimeIt(default_args=(100, 500))
@@ -50,6 +51,5 @@ def memoized(n, _primes={}):
 print('fibonnaci!')
 fib_timer.run()
 
-print('\n')
 print('and prime!')
 prime_timer.run()
