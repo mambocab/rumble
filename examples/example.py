@@ -1,4 +1,4 @@
-import stimeit
+from simpletimeit import stimeit
 
 time_args = (100, 500)
 
@@ -11,7 +11,7 @@ def check_all(n):
             result.append(i)
     return result
 
-@stimeit.time_this(args=time_args, group='primes', ref=check_all)
+@stimeit.time_this(args=time_args, group='primes')
 def sieve(n):
     flags = [True for _ in range(n + 1)]
     flags[0] = flags[1] = False
@@ -23,7 +23,7 @@ def sieve(n):
 
     return [i for i, f in enumerate(flags) if f]
 
-@stimeit.time_this(args=time_args, group='primes', ref=check_all)
+@stimeit.time_this(args=time_args, group='primes')
 def memoized(n, _primes={}):
     result = []
     for i in range(2, n + 1):

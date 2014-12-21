@@ -1,10 +1,18 @@
 import timeit
 
-from datatypes import Report
+from .datatypes import Report
 
 
 def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
-    """Copied almost entirely from the timeit source:
+    """
+    Adaptively chooses a number of times to execute stmt, then does so repeat
+    times. It chooses a number of executions such that each set of loops takes
+    more than 0.2 seconds -- so it's hopefully a representative sample -- but
+    takes less than 2 seconds.
+
+    This code is adapted from the source for the timeit module from the Python
+    3.4 standard library. See line 284 here:
+
     https://hg.python.org/cpython/file/3.4/Lib/timeit.py
     """
     timer = timeit.default_timer
@@ -15,18 +23,10 @@ def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
         # determine number so that 0.2 <= total time < 2.0
         for i in range(1, 10):
             number = 10**i
-            try:
-                x = t.timeit(number)
-            except Exception as e:
-                t.print_exc()
-                raise e
+            x = t.timeit(number)
             if x >= 0.2:
                 break
-    try:
-        results = t.repeat(repeat, number)
-    except Exception as e:
-        t.print_exc()
-        raise e
+    results = t.repeat(repeat, number)
     best = min(results) * 1e6 / number
     return Report(best=best,
                   number=number,
