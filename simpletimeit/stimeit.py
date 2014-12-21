@@ -3,6 +3,8 @@ import timeit
 from io import StringIO
 from tabulate import tabulate
 from itertools import product
+from adaptiverun import adaptiverun
+from datatypes import TimedFunction, Report
 
 # group: has many functions
 # function: has many inputs
@@ -12,40 +14,6 @@ _inputs = defaultdict(list)
 _func_names = {}
 _group_names = []
 _input_list = []
-
-TimedFunction = namedtuple('TimedFunction',
-                           ['function', 'group', 'input'])
-Report = namedtuple('Report', ['best', 'number', 'repeat', 'timedfunction'])
-
-def _run(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
-    """Copied almost entirely from the timeit source:
-    https://hg.python.org/cpython/file/3.4/Lib/timeit.py
-    """
-    timer = timeit.default_timer
-    if _wrap_timer is not None:
-        timer = _wrap_timer(timer)
-    t = timeit.Timer(stmt, setup, timer)
-    if number == 0:
-        # determine number so that 0.2 <= total time < 2.0
-        for i in range(1, 10):
-            number = 10**i
-            try:
-                x = t.timeit(number)
-            except Exception as e:
-                t.print_exc()
-                raise e
-            if x >= 0.2:
-                break
-    try:
-        results = t.repeat(repeat, number)
-    except Exception as e:
-        t.print_exc()
-        raise e
-    best = min(results) * 1e6 / number
-    return Report(best=best,
-                  number=number,
-                  repeat=repeat,
-                  timedfunction=None)
 
 def time_this(func_input, group='', ref=None):
     def wrapper(timed_func):
@@ -68,7 +36,7 @@ def generate_table(results):
         if len(input_rs) == 0:
             continue
 
-        input_id = '{g}: {i}'.format(g=g, i=i)
+        input_id = '{g}: {i}'.format(g=g, i=i) if g else str(i)
         result_list.extend([input_id, '\n', '=' * len(input_id)])
         result_list.append('\n')
 
@@ -98,7 +66,7 @@ def run(verbose=False):
                 print('# setup:', setup, sep='\n')
                 print('# statement:', stmt, sep='\n')
 
-            results.append(_run(stmt, setup=setup)._replace(
+            results.append(adaptiverun(stmt, setup=setup)._replace(
                 timedfunction=TimedFunction(function=funcs[j],
                                             group=_func_names[funcs[j]],
                                             input=i)))
