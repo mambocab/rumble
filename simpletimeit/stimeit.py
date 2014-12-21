@@ -2,10 +2,10 @@ from collections import defaultdict, namedtuple
 from contextlib import contextmanager
 from functools import wraps
 
-from adaptiverun import adaptiverun
-from datatypes import Report, TimedFunction
-from report import generate_table
-from utils import ordered_uniques
+from .adaptiverun import adaptiverun
+from .datatypes import Report, TimedFunction
+from .report import generate_table
+from .utils import ordered_uniques
 
 _stimeit_current_function = None
 dummy = object()
@@ -47,7 +47,7 @@ class SimpleTimeIt:
             results = []
             for f in filter(lambda f: f.group == g, self._funcs):
                 key = repr(f.args) if isinstance(f.args, str) else f.args
-                setup = 'from stimeit import _stimeit_current_function'
+                setup = 'from simpletimeit.stimeit import _stimeit_current_function'
                 stmt = '_stimeit_current_function({i})'.format(i=key)
 
                 if verbose:
@@ -60,7 +60,7 @@ class SimpleTimeIt:
 
                 results.append(r._replace(timedfunction=f))
 
-            report(self.report_function(generate_table(results)))
+            report(self.report_function(results))
 
         return ''.join(rv) if as_string else None
 

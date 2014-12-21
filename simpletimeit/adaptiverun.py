@@ -1,6 +1,6 @@
 import timeit
 
-from datatypes import Report
+from .datatypes import Report
 
 
 def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
