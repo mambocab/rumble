@@ -1,4 +1,4 @@
-# Simple Profiler
+# Simple Timeit
 
 A library for easily comparing function runtimes.
 
