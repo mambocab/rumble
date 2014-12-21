@@ -15,18 +15,10 @@ def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
         # determine number so that 0.2 <= total time < 2.0
         for i in range(1, 10):
             number = 10**i
-            try:
-                x = t.timeit(number)
-            except Exception as e:
-                t.print_exc()
-                raise e
+            x = t.timeit(number)
             if x >= 0.2:
                 break
-    try:
-        results = t.repeat(repeat, number)
-    except Exception as e:
-        t.print_exc()
-        raise e
+    results = t.repeat(repeat, number)
     best = min(results) * 1e6 / number
     return Report(best=best,
                   number=number,
