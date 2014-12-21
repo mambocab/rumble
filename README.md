@@ -19,12 +19,12 @@ from simpletimeit import stimeit
 
 time_args = ('range(100000), num=10', 'range(1000000), num=2')
 
-@stimeit.time_this(func_input=time_args, name='generator')
-def func(iterator, num):
+@stimeit.time_this(func_input=time_args, group='func')
+def generator(iterator, num):
     ...
 
-@stimeit.time_this(func_input=time_args, name='for loop')
-def func(iterator, num):
+@stimeit.time_this(func_input=time_args, group='func')
+def for_loop(iterator, num):
     ...
 
 stimeit.run()
