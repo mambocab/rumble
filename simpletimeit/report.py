@@ -1,5 +1,7 @@
-from tabulate import tabulate
 from itertools import product
+
+from tabulate import tabulate
+
 from utils import ordered_uniques
 
 
@@ -43,4 +45,3 @@ def generate_table(results):
         result_list.append('\n\n')
 
     return ''.join(result_list)
-
