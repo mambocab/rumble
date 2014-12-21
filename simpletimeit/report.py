@@ -8,7 +8,6 @@ from utils import ordered_uniques
 def generate_table(results):
     result_list = []
 
-    # 
     groups = ordered_uniques(r.timedfunction.group for r in results)
     args = ordered_uniques(r.timedfunction.args for r in results)
     for g, i in product(groups, args):
@@ -32,8 +31,7 @@ def generate_table(results):
         headers = [title,
                    units,  # units
                    'loops',  # number of loops / repeat
-                   'best of'  # number of repeats
-                   ]
+                   'best of']  # number of repeats
         table = [[r.timedfunction.function.__name__,
                   r.best / divisor,  # units
                   r.number,  # number of loops / repeat
