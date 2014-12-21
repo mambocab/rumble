@@ -1,4 +1,4 @@
-# Simple Profiler
+# Simple Timeit
 
 A library for easily comparing function runtimes.
 
@@ -6,9 +6,9 @@ You want to compare runtimes for different implementations of a function -- let'
 
 - Create a file called `functime.py`. Paste in the different implementations into that file, with names like `func1` and `func2`.
 - Run a bunch of `timeit` commands:
-    - `python -m timeit -s 'import functime' 'func1(range(100000), num=10)'`, and then 
-    - `python -m timeit -s 'import functime' 'func2(range(100000), num=10)'`, and then 
-    - `python -m timeit -s 'import functime' 'func1(range(1000000), num=2)'`, and then 
+    - `python -m timeit -s 'import functime' 'func1(range(100000), num=10)'`, and then
+    - `python -m timeit -s 'import functime' 'func2(range(100000), num=10)'`, and then
+    - `python -m timeit -s 'import functime' 'func1(range(1000000), num=2)'`, and then
     - `python -m timeit -s 'import functime' 'func2(range(1000000), num=2)'`
 - Look back through your shell history to see what happened. Try to remember whether `func1` was the one with the for loop or the generator. Generally be a little confused.
 
@@ -32,9 +32,6 @@ stimeit.run()
 
 and it prints out a lovely little report, much more readable than your shell history.
 
-* Free software: BSD license
+## License
 
-Features
---------
-
-* TODO
+This code is licensed under the MIT License. Code in `adaptiverun.py` is derived from the Python 3.4 standard library.
