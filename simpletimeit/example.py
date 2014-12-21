@@ -1,5 +1,4 @@
 import stimeit
-from functools import lru_cache
 
 time_args = (100, 500)
 
