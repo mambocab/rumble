@@ -36,7 +36,7 @@ def generate_table(results):
                   r.best / divisor,  # units
                   r.number,  # number of loops / repeat
                   r.repeat]  # number of repeats
-                  for r in input_rs]
+                 for r in input_rs]
 
         result_list.append(tabulate(table, tablefmt='simple',
                                     floatfmt=".2f", headers=headers))

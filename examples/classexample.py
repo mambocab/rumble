@@ -1,5 +1,3 @@
-import sys
-
 from functools import lru_cache
 
 from simpletimeit import stimeit
@@ -23,7 +21,6 @@ def memoized(n):
     if n in {1, 2}:
         return 1
     return memoized(n - 1) + memoized(n - 2)
-
 
 prime_timer = stimeit.SimpleTimeIt(default_args=(100, 500))
 
@@ -50,8 +47,8 @@ def memoized(n, _primes={}):
 
     return result
 
-print('fibonnaci!')
+print('fibonacci!')
 fib_timer.run()
 
-print('and prime!')
+print('ready for prime time!')
 prime_timer.run()

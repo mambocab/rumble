@@ -1,14 +1,13 @@
-from collections import defaultdict, namedtuple
 from contextlib import contextmanager
-from functools import wraps
 
 from .adaptiverun import adaptiverun
-from .datatypes import Report, TimedFunction
+from .datatypes import TimedFunction
 from .report import generate_table
 from .utils import ordered_uniques
 
 _stimeit_current_function = None
 dummy = object()
+
 
 @contextmanager
 def current_function(f):
@@ -16,6 +15,7 @@ def current_function(f):
     _stimeit_current_function = f
     yield
     _stimeit_current_function = None
+
 
 class SimpleTimeIt:
     def __init__(self, report_function=generate_table, default_args=()):
@@ -37,6 +37,7 @@ class SimpleTimeIt:
     def run(self, verbose=False, as_string=False):
         if as_string:
             rv = []
+
             def report(*args, sep=' ', end='\n'):
                 rv.append(sep.join(args))
                 rv.append(end)
@@ -47,13 +48,13 @@ class SimpleTimeIt:
             results = []
             for f in filter(lambda f: f.group == g, self._funcs):
                 key = repr(f.args) if isinstance(f.args, str) else f.args
-                setup = 'from simpletimeit.stimeit import _stimeit_current_function'
+                setup = ('from simpletimeit.stimeit '
+                         'import _stimeit_current_function')
                 stmt = '_stimeit_current_function({i})'.format(i=key)
 
                 if verbose:
                     report('# setup:', setup, sep='\n')
                     report('# statement:', stmt, sep='\n')
-
 
                 with current_function(f.function):
                     r = adaptiverun(stmt, setup=setup)
@@ -65,7 +66,10 @@ class SimpleTimeIt:
         return ''.join(rv) if as_string else None
 
 _module_instance = SimpleTimeIt()
+
+
 def reset():
+    global _module_instance
     _module_instance = SimpleTimeIt()
 
 time_this = _module_instance.time_this
