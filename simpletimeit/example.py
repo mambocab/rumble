@@ -1,10 +1,9 @@
 import stimeit
-from functools import lru_cache
 
 time_args = (100, 500)
 
 
-@stimeit.time_this(func_input=time_args, group='primes')
+@stimeit.time_this(args=time_args, group='primes')
 def check_all(n):
     result = []
     for i in range(2, n + 1):
@@ -12,7 +11,7 @@ def check_all(n):
             result.append(i)
     return result
 
-@stimeit.time_this(func_input=time_args, group='primes', ref=check_all)
+@stimeit.time_this(args=time_args, group='primes', ref=check_all)
 def sieve(n):
     flags = [True for _ in range(n + 1)]
     flags[0] = flags[1] = False
@@ -24,7 +23,7 @@ def sieve(n):
 
     return [i for i, f in enumerate(flags) if f]
 
-@stimeit.time_this(func_input=time_args, group='primes', ref=check_all)
+@stimeit.time_this(args=time_args, group='primes', ref=check_all)
 def memoized(n, _primes={}):
     result = []
     for i in range(2, n + 1):
@@ -35,14 +34,14 @@ def memoized(n, _primes={}):
 
     return result
 
-@stimeit.time_this(func_input=('range(100)', 'range(1000000)'), group='flatten')
-def with_list(iterator):
-    return list(iterator)
+@stimeit.time_this(args=(100, 600), group='flatten')
+def with_list(n):
+    return list(range(n))
 
 
-@stimeit.time_this(func_input=('range(100)', 'range(1000000)'), group='flatten')
-def with_tuple(iterator):
-    return tuple(iterator)
+@stimeit.time_this(args=(100, 600), group='flatten')
+def with_tuple(n):
+    return tuple(range(n))
 
 if __name__ == '__main__':
     stimeit.run()
