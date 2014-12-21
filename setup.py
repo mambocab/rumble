@@ -4,11 +4,10 @@ except ImportError:
     from distutils.core import setup
 
 
-readme = open('README.rst').read()
-history = open('HISTORY.rst').read().replace('.. :changelog:', '')
+readme = open('README.md').read()
 
 requirements = [
-    # TODO: put package requirements here
+    'tabulate',
 ]
 
 test_requirements = [
@@ -19,7 +18,7 @@ setup(
     name='simpletimeit',
     version='0.0.1',
     description='A library for easily comparing function runtimes.',
-    long_description=readme + '\n\n' + history,
+    long_description=readme,
     author='Jim Witschey',
     author_email='jim.witschey@gmail.com',
     url='https://github.com/mambocab/simpletimeit',
