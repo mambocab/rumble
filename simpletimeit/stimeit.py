@@ -50,11 +50,10 @@ class SimpleTimeIt:
 
     def run(self, verbose=False, as_string=False):
         if as_string:
-            rv = []
-
-            def report(sep=' ', end='\n', *args):
-                rv.append(sep.join(args))
-                rv.append(end)
+            def report(sep=' ', end='\n', _v=[], *args):
+                _v.append(sep.join(args))
+                _v.append(end)
+                report.value = _v
         else:
             report = print
 
@@ -77,7 +76,7 @@ class SimpleTimeIt:
 
             report(self.report_function(results))
 
-        return ''.join(rv) if as_string else None
+        return ''.join(report.value) if as_string else None
 
 _module_instance = SimpleTimeIt()
 
