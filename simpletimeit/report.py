@@ -1,50 +1,81 @@
 from __future__ import division
 
+from functools import lru_cache
 from itertools import product
 
 from tabulate import tabulate
 
 from .utils import ordered_uniques
 
-def _title_from_group_and_args(group, args):
-    rv = '({}) '.format(group) if group else ''
-    rv += 'args: {}'.format(str(args)) if str(args) else ''
-    return rv
+_unit_divisors = {'usec': 1, 'msec': 1000, 'sec': 1000000}
+
+
+class DefaultTableGenerator():
+    def __init__(self, results):
+        self._results = tuple(results)
+
+    @lru_cache(None)
+    def render_title_for(self, group, args):
+        rv = '({}) '.format(group) if group else ''
+        rv += 'args: {}'.format(str(args)) if str(args) else ''
+        return rv
+
+    @lru_cache(None)
+    def render_results(self):
+        results = []
+        for group, arg in product(self.groups(), self.args()):
+            rs = self.results_for(group, arg)
+            if rs:
+                results.append(self.render_table_for(group, arg))
+                results.append('\n\n')
+        return ''.join(results)
+
+    @lru_cache(None)
+    def render_table_for(self, group, args):
+        headers = self.header_for(group, args)
+        table = [[r.timedfunction.function.__name__,
+                  r.best / _unit_divisors[self.units_for(group, args)],
+                  r.number,  # number of loops / repeat
+                  r.repeat]  # number of repeats
+                 for r in self.results_for(group, args)]
+
+        return tabulate(table, tablefmt='simple',
+                        floatfmt=".2f", headers=headers)
+
+    @lru_cache(None)
+    def header_for(self, group, args):
+        return (self.render_title_for(group, args),
+                self.units_for(group, args),
+                'loops',
+                'best of')
+
+    @lru_cache(None)
+    def results_for(self, group, args):
+        def valid(r):
+            tf = r.timedfunction
+            return tf.group == group and tf.args == args
+        return tuple(filter(valid, self._results))
+
+    @lru_cache(None)
+    def groups(self):
+        return tuple(ordered_uniques(r.timedfunction.group
+                                     for r in self._results))
+
+    @lru_cache(None)
+    def args(self):
+        return tuple(ordered_uniques(r.timedfunction.args
+                                     for r in self._results))
+
+    @lru_cache(None)
+    def units_for(self, group, args):
+        """Accepts values in usec."""
+        smallest = min(r.best for r in self.results_for(group, args))
+        units = 'usec'
+        for s, n in [('msec', 1000), ('sec', 1000000)]:
+            if smallest > n:
+                units = s
+        return units
 
 
 def generate_table(results):
-    result_list = []
-
-    groups = ordered_uniques(r.timedfunction.group for r in results)
-    args = ordered_uniques(r.timedfunction.args for r in results)
-    for g, i in product(groups, args):
-        input_rs = [r for r in results
-                    if r.timedfunction.group == g
-                    and r.timedfunction.args == i]
-        if len(input_rs) == 0:
-            continue
-
-        smallest = min(r.best for r in input_rs)
-        divisor = 1
-        units = 'usec'
-        for s in ['msec', 'sec']:
-            if smallest > 1000:
-                units = s
-                divisor *= 1000
-                smallest /= 1000
-
-        headers = [_title_from_group_and_args(g, args),
-                   units,  # units
-                   'loops',  # number of loops / repeat
-                   'best of']  # number of repeats
-        table = [[r.timedfunction.function.__name__,
-                  r.best / divisor,  # units
-                  r.number,  # number of loops / repeat
-                  r.repeat]  # number of repeats
-                 for r in input_rs]
-
-        result_list.append(tabulate(table, tablefmt='simple',
-                                    floatfmt=".2f", headers=headers))
-        result_list.append('\n\n')
-
-    return ''.join(result_list)
+    return DefaultTableGenerator(results).render_results()
