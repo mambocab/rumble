@@ -1,3 +1,5 @@
+from __future__ import division
+
 from itertools import product
 
 from tabulate import tabulate
