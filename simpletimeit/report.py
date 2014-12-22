@@ -6,6 +6,11 @@ from tabulate import tabulate
 
 from .utils import ordered_uniques
 
+def _title_from_group_and_args(group, args):
+    rv = '({}) '.format(group) if group else ''
+    rv += 'args: {}'.format(str(args)) if str(args) else ''
+    return rv
+
 
 def generate_table(results):
     result_list = []
@@ -28,9 +33,7 @@ def generate_table(results):
                 divisor *= 1000
                 smallest /= 1000
 
-        title = '({}) '.format(g) if g else ''
-        title += 'args: {}'.format(str(i)) if str(i) else ''
-        headers = [title,
+        headers = [_title_from_group_and_args(g, args),
                    units,  # units
                    'loops',  # number of loops / repeat
                    'best of']  # number of repeats
