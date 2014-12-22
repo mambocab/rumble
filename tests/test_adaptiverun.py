@@ -1,13 +1,12 @@
 from __future__ import division
 
-from time import sleep
+from simpletimeit import adaptiverun
 
 try:
-    from unittest.mock import Mock, call, patch
+    from unittest.mock import Mock, patch
 except ImportError:
-    from mock import Mock, call, patch
+    from mock import Mock, patch
 
-from simpletimeit import adaptiverun
 
 
 def test_time_thresholds():
@@ -37,7 +36,7 @@ def test_time_thresholds():
             with patch(repeat_patch, repeat_mock) as m:
                 r = adaptiverun.adaptiverun('pass', setup='pass')
                 m.assert_called_once_with(3, number)
-            assert r.number == number
+                assert r.number == number
 
 
 def test_repeat_call():
@@ -45,16 +44,7 @@ def test_repeat_call():
     patch_string = 'simpletimeit.adaptiverun.timeit.Timer.repeat'
     new = Mock(return_value=[1])
     with patch(patch_string, new=new) as m:
-        r = adaptiverun.adaptiverun('pass', number=number, repeat=repeat)
-        m.assert_called_once_with(repeat, number)
-
-
-def test_repeat_call():
-    number, repeat = 12, 1
-    patch_string = 'simpletimeit.adaptiverun.timeit.Timer.repeat'
-    new = Mock(return_value=[1])
-    with patch(patch_string, new=new) as m:
-        r = adaptiverun.adaptiverun('pass', number=number, repeat=repeat)
+        adaptiverun.adaptiverun('pass', number=number, repeat=repeat)
         m.assert_called_once_with(repeat, number)
 
 
@@ -62,9 +52,8 @@ def test_return_value():
     number, repeat = 52, 2
     patch_string = 'simpletimeit.adaptiverun.timeit.Timer.repeat'
     new = Mock(return_value=[1])
-    with patch(patch_string, new=new) as m:
+    with patch(patch_string, new=new):
         r = adaptiverun.adaptiverun('pass', number=number, repeat=repeat)
     assert r.number == number
     assert r.repeat == repeat
     assert r.best == 1000000 / number
-
