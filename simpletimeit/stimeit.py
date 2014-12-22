@@ -2,10 +2,12 @@ from __future__ import print_function
 
 from contextlib import contextmanager
 
+import six
+
 from .adaptiverun import adaptiverun
 from .datatypes import TimedFunction
 from .report import generate_table
-from .utils import ordered_uniques
+from .utils import ordered_uniques, repr_is_constructor
 
 _stimeit_current_function = None
 dummy = object()
@@ -31,6 +33,16 @@ class SimpleTimeIt:
         """
         def wrapper(f):
             for a in self.default_args if args == dummy else args:
+                if not isinstance(a, six.string_types):
+                    if not repr_is_constructor(a):
+                        raise ValueError(
+                            ('{} will be passed to a format string, and that '
+                             'string will be executed as Python code. Thus, '
+                             'arguments must either be a string to be '
+                             'evaluated as the arguments to the timed '
+                             'function or be a value whose repr constructs an'
+                             'identical object.').format(a))
+
                 tf = TimedFunction(function=f, group=group, args=a)
                 self._funcs.append(tf)
             return f
