@@ -8,6 +8,7 @@ readme = open('README.md').read()
 
 requirements = [
     'tabulate',
+    'six'
 ]
 
 test_requirements = [

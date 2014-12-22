@@ -2,6 +2,8 @@ from __future__ import print_function
 
 from contextlib import contextmanager
 
+import six
+
 from .adaptiverun import adaptiverun
 from .datatypes import TimedFunction
 from .report import generate_table
@@ -31,6 +33,7 @@ class SimpleTimeIt:
         """
         def wrapper(f):
             for a in self.default_args if args == dummy else args:
+                if not isinstance(a, six.string_types)
                 tf = TimedFunction(function=f, group=group, args=a)
                 self._funcs.append(tf)
             return f
