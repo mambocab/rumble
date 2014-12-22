@@ -29,7 +29,8 @@ def test_title_empty_group_name(default_reporter):
     result = default_reporter.render_title_for('', a)
     assert result == 'args: {}'.format(a)
 
+def test_title_empty_args(default_reporter):
+    g = 'test group'
+    result = default_reporter.render_title_for(g, '')
+    assert result == '({})'.format(g)
 
-def test_title_empty_group_name():
-    a = 'a=10, "foo"'
-    assert report._title_from_group_and_args('', a) == 'args: {}'.format(a)

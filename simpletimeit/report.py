@@ -16,8 +16,9 @@ class DefaultTableGenerator():
 
     @lru_cache(None)
     def render_title_for(self, group, args):
-        rv = '({}) '.format(group) if group else ''
-        rv += 'args: {}'.format(str(args)) if str(args) else ''
+        rv = '({})'.format(group) if group else ''
+        spacer = ' ' if rv else ''
+        rv += '{}args: {}'.format(spacer, str(args)) if str(args) else ''
         return rv
 
     @lru_cache(None)
