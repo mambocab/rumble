@@ -1,7 +1,11 @@
 from __future__ import division
 
 from time import sleep
-from unittest.mock import Mock, call, patch
+
+try:
+    from unittest.mock import Mock, call, patch
+except ImportError:
+    from mock import Mock, call, patch
 
 from simpletimeit import adaptiverun
 
