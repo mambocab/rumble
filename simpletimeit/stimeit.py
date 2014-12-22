@@ -43,28 +43,27 @@ class SimpleTimeIt:
                              'function or be a value whose repr constructs an'
                              'identical object.').format(a))
 
-                tf = TimedFunction(function=f, group=group, args=a)
-                self._funcs.append(tf)
+                self._funcs.append(TimedFunction(function=f,
+                                                 group=group,
+                                                 args=a))
             return f
         return wrapper
 
     def run(self, verbose=False, as_string=False):
         if as_string:
-            rv = []
-
-            def report(sep=' ', end='\n', *args):
-                rv.append(sep.join(args))
-                rv.append(end)
+            def report(sep=' ', end='\n', _v=[], *args):
+                _v.append(sep.join(args))
+                _v.append(end)
+                report.value = _v
         else:
             report = print
 
         for g in ordered_uniques(f.group for f in self._funcs):
             results = []
             for f in filter(lambda f: f.group == g, self._funcs):
-                key = repr(f.args) if isinstance(f.args, str) else f.args
                 setup = ('from simpletimeit.stimeit '
                          'import _stimeit_current_function')
-                stmt = '_stimeit_current_function({i})'.format(i=key)
+                stmt = '_stimeit_current_function({i})'.format(i=f.args)
 
                 if verbose:
                     report('# setup:', setup, sep='\n')
@@ -77,7 +76,7 @@ class SimpleTimeIt:
 
             report(self.report_function(results))
 
-        return ''.join(rv) if as_string else None
+        return ''.join(report.value) if as_string else None
 
 _module_instance = SimpleTimeIt()
 
