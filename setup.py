@@ -11,7 +11,8 @@ requirements = [
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    'py.test',
+    'mock'
 ]
 
 setup(
