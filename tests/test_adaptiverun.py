@@ -8,7 +8,6 @@ except ImportError:
     from mock import Mock, patch
 
 
-
 def test_time_thresholds():
     # I don't normally like mocking this deeply, but timeit.Timer has a very
     # stable interface, and the way I use timeit.Timer meant to be identical
