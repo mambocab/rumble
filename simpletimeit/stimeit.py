@@ -10,7 +10,7 @@ from .report import generate_table
 from .utils import ordered_uniques, repr_is_constructor
 
 _stimeit_current_function = None
-dummy = object()
+_dummy = object()
 
 
 @contextmanager
@@ -27,12 +27,12 @@ class SimpleTimeIt:
         self.report_function = report_function
         self._funcs = []
 
-    def time_this(self, args=dummy, group=''):
+    def time_this(self, args=_dummy, group=''):
         """A decorator. Registers the decorated function as a TimedFunction
         with this SimpleTimeIt, then leaving the function unchanged.
         """
         def wrapper(f):
-            for a in self.default_args if args == dummy else args:
+            for a in self.default_args if args is _dummy else args:
                 if not isinstance(a, six.string_types):
                     if not repr_is_constructor(a):
                         raise ValueError(
