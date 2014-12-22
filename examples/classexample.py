@@ -1,4 +1,5 @@
 from functools import wraps
+
 from simpletimeit import stimeit
 
 fib_timer = stimeit.SimpleTimeIt()
