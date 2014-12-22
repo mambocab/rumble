@@ -1,7 +1,5 @@
 from __future__ import division
 
-from collections import OrderedDict
-
 from simpletimeit import utils
 
 
@@ -22,11 +20,6 @@ def test_remove_non_unique():
 
 def test_repr_succeeds_on_string():
     assert utils.repr_is_constructor('hi')
-
-
-def test_repr_fails_on_ordereddict():
-    # this fails because OrdereDict doesn't exist in the 'eval' context
-    assert not utils.repr_is_constructor(OrderedDict([(1, 'yo'), (2, 'hi')]))
 
 
 def test_repr_fails_on_lambda():
