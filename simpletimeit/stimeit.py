@@ -43,8 +43,9 @@ class SimpleTimeIt:
                              'function or be a value whose repr constructs an'
                              'identical object.').format(a))
 
-                tf = TimedFunction(function=f, group=group, args=a)
-                self._funcs.append(tf)
+                self._funcs.append(TimedFunction(function=f,
+                                                 group=group,
+                                                 args=a))
             return f
         return wrapper
 
