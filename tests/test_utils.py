@@ -1,7 +1,8 @@
 from __future__ import division
 
-from simpletimeit import utils
 from collections import OrderedDict
+
+from simpletimeit import utils
 
 
 def test_empty():
