@@ -30,7 +30,7 @@ class SimpleTimeIt:
         with this SimpleTimeIt, then leaving the function unchanged.
         """
         def wrapper(f):
-            for a in self.default_args if args == dummy else args:
+            for a in self.default_args if args is dummy else args:
                 tf = TimedFunction(function=f, group=group, args=a)
                 self._funcs.append(tf)
             return f
