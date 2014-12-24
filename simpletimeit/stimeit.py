@@ -48,11 +48,11 @@ class SimpleTimeIt:
         return wrapper
 
     def run(self, verbose=False, as_string=False):
-        out = six.StringIO if as_string else None
+        out = six.StringIO() if as_string else None
 
-        for cble in ordered_uniques(tf.function for tf in self._funcs):
+        for a in ordered_uniques(tf.args for tf in self._funcs):
             results = []
-            for tf in filter(lambda t: t.function == cble, self._funcs):
+            for tf in filter(lambda t: t.args == a, self._funcs):
                 setup = ('from simpletimeit.stimeit '
                          'import _stimeit_current_function')
                 stmt = '_stimeit_current_function({i})'.format(i=tf.args)
@@ -66,9 +66,9 @@ class SimpleTimeIt:
 
                 results.append(r._replace(timedfunction=tf))
 
-            print(self.report_function(results), file=out)
+            print(self.report_function(results) + '\n', file=out)
 
-        return ''.join(out.getvalue) if as_string else None
+        return out.getvalue() if as_string else None
 
 _module_instance = SimpleTimeIt()
 

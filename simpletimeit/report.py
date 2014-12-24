@@ -17,8 +17,8 @@ class DefaultTableGenerator():
         return 'args: {a}'.format(a=str(args)) if str(args) else ''
 
     def render_results(self):
-        return ''.join([self.render_table_for(a) + '\n\n'
-                        for a in self.args()])
+        return ''.join([self.render_table_for(a)
+                        for a in ordered_uniques(self.args())])
 
     def render_table_for(self, args):
         headers = self.header_for(args)
