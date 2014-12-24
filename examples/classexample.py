@@ -3,7 +3,7 @@ from functools import wraps
 from simpletimeit import stimeit
 
 fib_timer = stimeit.SimpleTimeIt()
-fib_timer.default_args = (3, 9, 17)
+fib_timer.default_args = [3, 9, 17]
 
 def memoize(f):
     '''memoizer for single-argument functions'''
@@ -21,7 +21,7 @@ def memoize(f):
 def recursive(n):
     if n == 0:
         return 0
-    if n in {1, 2}:
+    if n in (1, 2):
         return 1
     return recursive(n - 1) + recursive(n - 2)
 
@@ -30,7 +30,7 @@ def recursive(n):
 def memoized(n):
     if n == 0:
         return 0
-    if n in {1, 2}:
+    if n in (1, 2):
         return 1
     return memoized(n - 1) + memoized(n - 2)
 

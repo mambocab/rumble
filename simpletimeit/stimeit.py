@@ -27,7 +27,7 @@ class SimpleTimeIt:
         self.report_function = report_function
         self._funcs = []
 
-    def time_this(self, args=_dummy, group=''):
+    def time_this(self, args=_dummy):
         """A decorator. Registers the decorated function as a TimedFunction
         with this SimpleTimeIt, then leaving the function unchanged.
         """
@@ -43,40 +43,32 @@ class SimpleTimeIt:
                              'function or be a value whose repr constructs an'
                              'identical object.').format(a=a))
 
-                self._funcs.append(TimedFunction(function=f,
-                                                 group=group,
-                                                 args=a))
+                self._funcs.append(TimedFunction(function=f, args=a))
             return f
         return wrapper
 
     def run(self, verbose=False, as_string=False):
-        if as_string:
-            def report(sep=' ', end='\n', _v=[], *args):
-                _v.append(sep.join(args))
-                _v.append(end)
-                report.value = _v
-        else:
-            report = print
+        out = six.StringIO if as_string else None
 
-        for g in ordered_uniques(f.group for f in self._funcs):
+        for cble in ordered_uniques(tf.function for tf in self._funcs):
             results = []
-            for f in filter(lambda f: f.group == g, self._funcs):
+            for tf in filter(lambda t: t.function == cble, self._funcs):
                 setup = ('from simpletimeit.stimeit '
                          'import _stimeit_current_function')
-                stmt = '_stimeit_current_function({i})'.format(i=f.args)
+                stmt = '_stimeit_current_function({i})'.format(i=tf.args)
 
                 if verbose:
-                    report('# setup:', setup, sep='\n')
-                    report('# statement:', stmt, sep='\n')
+                    print('# setup:', setup, sep='\n', file=out)
+                    print('# statement:', stmt, sep='\n', file=out)
 
-                with current_function(f.function):
+                with current_function(tf.function):
                     r = adaptiverun(stmt, setup=setup)
 
-                results.append(r._replace(timedfunction=f))
+                results.append(r._replace(timedfunction=tf))
 
-            report(self.report_function(results))
+            print(self.report_function(results), file=out)
 
-        return ''.join(report.value) if as_string else None
+        return ''.join(out.getvalue) if as_string else None
 
 _module_instance = SimpleTimeIt()
 
