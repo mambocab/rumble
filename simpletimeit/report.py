@@ -14,9 +14,9 @@ class DefaultTableGenerator():
         self._results = tuple(results)
 
     def render_title_for(self, group, args):
-        rv = '({})'.format(group) if group else ''
+        rv = '({g})'.format(g=group) if group else ''
         spacer = ' ' if rv else ''
-        rv += '{}args: {}'.format(spacer, str(args)) if str(args) else ''
+        rv += '{s}args: {a}'.format(s=spacer, a=str(args)) if str(args) else ''
         return rv
 
     def render_results(self):

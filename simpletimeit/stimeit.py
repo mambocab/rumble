@@ -36,12 +36,12 @@ class SimpleTimeIt:
                 if not isinstance(a, six.string_types):
                     if not repr_is_constructor(a):
                         raise ValueError(
-                            ('{} will be passed to a format string, and that '
+                            ('{a} will be passed to a format string, and that '
                              'string will be executed as Python code. Thus, '
                              'arguments must either be a string to be '
                              'evaluated as the arguments to the timed '
                              'function or be a value whose repr constructs an'
-                             'identical object.').format(a))
+                             'identical object.').format(a=a))
 
                 self._funcs.append(TimedFunction(function=f,
                                                  group=group,

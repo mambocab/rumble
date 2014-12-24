@@ -28,12 +28,12 @@ def default_reporter():
 def test_title_empty_group_name(default_reporter):
     a = 'range(100)'
     result = default_reporter.render_title_for('', a)
-    assert result == 'args: {}'.format(a)
+    assert result == 'args: {a}'.format(a=a)
 
 def test_title_empty_args(default_reporter):
     g = 'test group'
     result = default_reporter.render_title_for(g, '')
-    assert result == '({})'.format(g)
+    assert result == '({g})'.format(g=g)
 
 def test_groups(default_reporter):
     """Make sure the return value of DefaultTableGenerator.groups() is the
