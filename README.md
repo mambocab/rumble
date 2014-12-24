@@ -4,13 +4,13 @@ A library for easily comparing function runtimes.
 
 You want to compare runtimes for different implementations of a function -- let's call it `func`. The way you used to do this:
 
-- Create a file called `functime.py`. Paste in the different implementations into that file, with names like `func1` and `func2`.
+- Create a file called `functime.py`. Paste in the different implementations into that file, with names like `generator` and `for_lop`.
 - Run a bunch of `timeit` commands:
-    - `python -m timeit -s 'import functime' 'func1(range(100000), num=10)'`, and then
-    - `python -m timeit -s 'import functime' 'func2(range(100000), num=10)'`, and then
-    - `python -m timeit -s 'import functime' 'func1(range(1000000), num=2)'`, and then
-    - `python -m timeit -s 'import functime' 'func2(range(1000000), num=2)'`
-- Look back through your shell history to see what happened. Try to remember whether `func1` was the one with the for loop or the generator. Generally be a little confused.
+    - `python -m timeit -s 'import functime' 'generator(range(100000), num=10)'`, and then
+    - `python -m timeit -s 'import functime' 'for_loop(range(100000), num=10)'`, and then
+    - `python -m timeit -s 'import functime' 'generator(range(1000000), num=2)'`, and then
+    - `python -m timeit -s 'import functime' 'for_loop(range(1000000), num=2)'`
+- Look back through your shell history to see what happened.
 
 Now, you can do this:
 
@@ -19,11 +19,11 @@ from simpletimeit import stimeit
 
 time_args = ('range(100000), num=10', 'range(1000000), num=2')
 
-@stimeit.time_this(func_input=time_args, group='func')
+@stimeit.time_this(func_input=time_args)
 def generator(iterator, num):
     ...
 
-@stimeit.time_this(func_input=time_args, group='func')
+@stimeit.time_this(func_input=time_args)
 def for_loop(iterator, num):
     ...
 
