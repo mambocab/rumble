@@ -22,9 +22,8 @@ def current_function(f):
 
 
 class SimpleTimeIt:
-    def __init__(self, report_function=generate_table, default_args=()):
+    def __init__(self, default_args=()):
         self.default_args = default_args
-        self.report_function = report_function
         self._funcs = []
 
     def time_this(self, args=_dummy):
@@ -47,7 +46,8 @@ class SimpleTimeIt:
             return f
         return wrapper
 
-    def run(self, verbose=False, as_string=False):
+    def run(self, report_function=generate_table,
+            as_string=False, verbose=False):
         out = six.StringIO() if as_string else None
 
         for a in ordered_uniques(tf.args for tf in self._funcs):
@@ -66,7 +66,7 @@ class SimpleTimeIt:
 
                 results.append(r._replace(timedfunction=tf))
 
-            print(self.report_function(results) + '\n', file=out)
+            print(report_function(results) + '\n', file=out)
 
         return out.getvalue() if as_string else None
 
