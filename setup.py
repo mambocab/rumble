@@ -18,7 +18,7 @@ test_requirements = [
 
 setup(
     name='simpletimeit',
-    version='0.0.2',
+    version='0.0.3',
     description='A library for easily comparing function runtimes.',
     long_description=readme,
     author='Jim Witschey',
