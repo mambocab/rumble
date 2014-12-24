@@ -1,2 +1,2 @@
 mock
-py.test
+pytest
