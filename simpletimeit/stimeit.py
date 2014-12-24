@@ -5,7 +5,7 @@ from contextlib import contextmanager
 import six
 
 from .adaptiverun import adaptiverun
-from .datatypes import TimedFunction
+from .datatypes import ArgsAndSetup
 from .report import generate_table
 from .utils import ordered_uniques, repr_is_constructor
 
@@ -22,51 +22,98 @@ def current_function(f):
 
 
 class SimpleTimeIt:
-    def __init__(self, default_args=()):
-        self.default_args = default_args
-        self._funcs = []
 
-    def time_this(self, args=_dummy):
-        """A decorator. Registers the decorated function as a TimedFunction
-        with this SimpleTimeIt, then leaving the function unchanged.
+    def __init__(self):
+        self._functions = []
+        self._args_setups = []
+
+    def call_with(self, args, setup='pass'):
+        """Resisters a string as the argument list to the functions
+        to be called as part of the performance comparisons. For instance, if
+        a SimpleTimeIt is specified as follows:
+
+            from simpletimeit.stimeit import SimpleTimeIt
+
+            st = SimpleTimeIt()
+            st.call_with("'Eric', 3, x=10")
+
+            @st.time_this
+            foo(name, n, x=15):
+                ...
+
+        Then `st.run()` will call (the equivalent of)
+
+            exec('foo({args})'.format(args="'Eric', 3, x=10"))
+
+        If 'args' is not a string, `call_with` will try to "do the right
+        thing" and convert it to a string. If that string, when executed, will
+        not render value equal to 'args', this method will throw an error. So,
+        for instance, `10` and `{a: 10, b: 15}` will work because
+        `10 == eval('10')` and `{a: 10, b: 15} == eval('{a: 10, b: 15}')`, but
+        `range(10)` will not work because `range(10) != eval('range(10)').
+
+        Takes an optional 'setup' argument. This string will be evaluated
+        before the timing runs, as with the 'setup' argument to Timer. This
+        value is 'pass' by default.
         """
-        def wrapper(f):
-            for a in self.default_args if args is _dummy else args:
-                if not isinstance(a, six.string_types):
-                    if not repr_is_constructor(a):
-                        raise ValueError(
-                            ('{a} will be passed to a format string, and that '
-                             'string will be executed as Python code. Thus, '
-                             'arguments must either be a string to be '
-                             'evaluated as the arguments to the timed '
-                             'function or be a value whose repr constructs an'
-                             'identical object.').format(a=a))
+        valid = (isinstance(args, six.string_types)
+                 or repr_is_constructor(args))
+        if not valid:
+            raise ValueError(
+                ('{a} will be passed to a format string, which will then be '
+                 'executed as Python code. Thus, arguments must either be a '
+                 'string to be evaluated as the arguments to the timed '
+                 'function, or be a value whose string representation '
+                 'constructs an identical object. see the `call_with` '
+                 'documentation for more details.').format(a=a))
+        if not (isinstance(setup, six.string_types) or callable(setup)):
+            raise ValueError(
+                "'setup' argument must be a string or callable.")
 
-                self._funcs.append(TimedFunction(function=f, args=a))
-            return f
-        return wrapper
+        self._args_setups.append(ArgsAndSetup(args=str(args), setup=setup))
+
+    def time_this(self, f):
+        """A decorator. Registers the decorated function as a TimedFunction
+        with this SimpleTimeIt, leaving the function unchanged.
+        """
+        self._functions.append(f)
+        return f
+
+    def _prepared_setup(self, setup):
+        setup_template = (
+            'from simpletimeit.stimeit import _stimeit_current_function\n'
+            '{setup}')
+        if isinstance(setup, six.string_types):
+            return setup_template.format(setup=setup)
+        elif callable(setup):
+            def prepared_setup_callable():
+                global _stimeit_current_function
+                _stimeit_current_function = func
+                setup()
+            return prepared_setup_callable
+        else:
+            raise ValueError("'setup' must be a string or callable")
 
     def run(self, report_function=generate_table,
-            as_string=False, verbose=False):
+            as_string=False):
         out = six.StringIO() if as_string else None
 
-        for a in ordered_uniques(tf.args for tf in self._funcs):
+        stmt_template = '_stimeit_current_function({args})'
+
+        for x in self._args_setups:
+            args, setup = x.args, x.setup
+            # print(args) ; exit()
             results = []
-            for tf in filter(lambda t: t.args == a, self._funcs):
-                setup = ('from simpletimeit.stimeit '
-                         'import _stimeit_current_function')
-                stmt = '_stimeit_current_function({i})'.format(i=tf.args)
 
-                if verbose:
-                    print('# setup:', setup, sep='\n', file=out)
-                    print('# statement:', stmt, sep='\n', file=out)
+            for func in self._functions:
+                # assumes args == eval(str(args)) (checked in call_with)
+                with current_function(func):
+                    r = adaptiverun(stmt=stmt_template.format(args=args),
+                                    setup=self._prepared_setup(setup),
+                                    title=repr(args))
+                results.append(r._replace(timedfunction=func))
 
-                with current_function(tf.function):
-                    r = adaptiverun(stmt, setup=setup)
-
-                results.append(r._replace(timedfunction=tf))
-
-            print(report_function(results) + '\n', file=out)
+            print(report_function(results, title=args) + '\n', file=out)
 
         return out.getvalue() if as_string else None
 
@@ -78,4 +125,5 @@ def reset():
     _module_instance = SimpleTimeIt()
 
 time_this = _module_instance.time_this
+call_with = _module_instance.call_with
 run = _module_instance.run

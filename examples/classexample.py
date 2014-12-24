@@ -3,7 +3,8 @@ from functools import wraps
 from simpletimeit import stimeit
 
 fib_timer = stimeit.SimpleTimeIt()
-fib_timer.default_args = [3, 9, 17]
+for x in [3, 9, 17]:
+    fib_timer.call_with(x)
 
 def memoize(f):
     '''memoizer for single-argument functions'''
@@ -17,7 +18,7 @@ def memoize(f):
             return _cache[x]
     return wrapper
 
-@fib_timer.time_this()
+@fib_timer.time_this
 def recursive(n):
     if n == 0:
         return 0
@@ -25,7 +26,7 @@ def recursive(n):
         return 1
     return recursive(n - 1) + recursive(n - 2)
 
-@fib_timer.time_this()
+@fib_timer.time_this
 @memoize
 def memoized(n):
     if n == 0:
@@ -34,9 +35,11 @@ def memoized(n):
         return 1
     return memoized(n - 1) + memoized(n - 2)
 
-prime_timer = stimeit.SimpleTimeIt(default_args=(100, 500))
+prime_timer = stimeit.SimpleTimeIt()
+prime_timer.call_with(100)
+prime_timer.call_with(500)
 
-@prime_timer.time_this()
+@prime_timer.time_this
 def sieve(n):
     flags = [True for _ in range(n + 1)]
     flags[0] = flags[1] = False
@@ -48,7 +51,7 @@ def sieve(n):
 
     return [i for i, f in enumerate(flags) if f]
 
-@prime_timer.time_this()
+@prime_timer.time_this
 @memoize
 def memoized(n, _primes={}):
     result = []

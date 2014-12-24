@@ -1,9 +1,10 @@
 from simpletimeit import stimeit
 
-time_args = (100, 500)
+stimeit.call_with(100)
+stimeit.call_with(500)
 
 
-@stimeit.time_this(args=time_args)
+@stimeit.time_this
 def check_all(n):
     result = []
     for i in range(2, n + 1):
@@ -11,7 +12,7 @@ def check_all(n):
             result.append(i)
     return result
 
-@stimeit.time_this(args=time_args)
+@stimeit.time_this
 def sieve(n):
     flags = [True for _ in range(n + 1)]
     flags[0] = flags[1] = False
@@ -23,7 +24,7 @@ def sieve(n):
 
     return [i for i, f in enumerate(flags) if f]
 
-@stimeit.time_this(args=time_args)
+@stimeit.time_this
 def memoized(n, _primes={}):
     result = []
     for i in range(2, n + 1):
@@ -33,15 +34,6 @@ def memoized(n, _primes={}):
             result.append(i)
 
     return result
-
-# @stimeit.time_this(args=(100, 600))
-# def with_list(n):
-#     return list(range(n))
-
-
-# @stimeit.time_this(args=(100, 600))
-# def with_tuple(n):
-#     return tuple(range(n))
 
 if __name__ == '__main__':
     stimeit.run()

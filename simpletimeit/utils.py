@@ -11,3 +11,7 @@ def repr_is_constructor(obj):
         return eval(repr(obj)) == obj
     except:
         return False
+
+
+def indented(s, prefix='    '):
+    return '\n'.join(prefix + line for line in s.splitlines())
