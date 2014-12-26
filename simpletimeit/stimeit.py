@@ -104,6 +104,7 @@ class SimpleTimeIt:
             args, setup = x.args, x.setup
             # print(args) ; exit()
             results = []
+            title = 'args: {args}'.format(args=args)
 
             for func in self._functions:
                 # assumes args == eval(str(args)) (checked in call_with)
@@ -113,7 +114,7 @@ class SimpleTimeIt:
                                     title=repr(args))
                 results.append(r._replace(timedfunction=func))
 
-            print(report_function(results, title=args) + '\n', file=out)
+            print(report_function(results, title=title) + '\n', file=out)
 
         return out.getvalue() if as_string else None
 
