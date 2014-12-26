@@ -24,7 +24,7 @@ def current_function(f):
 class SimpleTimeIt:
 
     def __init__(self):
-        """Initializes a SimpleTimeIt object"""
+        """Initializes a SimpleTimeIt object."""
         self._functions = []
         self._args_setups = []
 
@@ -99,8 +99,7 @@ class SimpleTimeIt:
     def run(self, report_function=generate_table,
             as_string=False):
         """Runs each of the functions registered with this SimpleTimeIt using
-        each arguments-setup pair registered with this SimpleTimeIt.
-        """
+        each arguments-setup pair registered with this SimpleTimeIt."""
         out = six.StringIO() if as_string else None
 
         stmt_template = '_stimeit_current_function({args})'
