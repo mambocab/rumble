@@ -22,6 +22,12 @@ def current_function(f):
 
 
 class SimpleTimeIt:
+    """A class for running simple performance comparisons between functions.
+
+    Typically, you will use call_with to add a number of arguments and
+    optional setup routines, and time_this to register a number of functions to
+    be compared. Then, calling run will run each function with each argument
+    list and print a table comparing the functions on each argument."""
 
     def __init__(self):
         """Initializes a SimpleTimeIt object."""
@@ -40,7 +46,7 @@ class SimpleTimeIt:
 
             @st.time_this
             foo(name, n, x=15):
-                ...
+                pass
 
         Then `st.run()` will call (the equivalent of)
 
@@ -81,7 +87,7 @@ class SimpleTimeIt:
         return f
 
     def _prepared_setup(self, setup, func):
-        """Generates the setup call for a given timing run."""
+        """Generates the setup routine for a given timing run."""
         setup_template = (
             'from simpletimeit.stimeit import _stimeit_current_function\n'
             '{setup}')
