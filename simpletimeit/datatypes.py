@@ -1,6 +1,6 @@
 from collections import namedtuple
 
-Report = namedtuple('Report', ['best', 'number', 'repeat', 'timedfunction'])
+TimingReport = namedtuple('TimingReport', ['best', 'number', 'repeat'])
 
 class Arguments(namedtuple('Arguments', ['args', 'keywords'])):
     __slots__ = ()

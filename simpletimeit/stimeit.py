@@ -108,8 +108,7 @@ class SimpleTimeIt:
         stmt_template = '_stimeit_current_function({args})'
         with current_function(func):
             return adaptiverun(stmt=stmt_template.format(args=args),
-                               setup=self._prepared_setup(setup, func),
-                               title=repr(args))
+                               setup=self._prepared_setup(setup, func))
 
     def run(self, report_function=generate_table, as_string=False):
         """Runs each of the functions registered with this SimpleTimeIt using
@@ -128,9 +127,10 @@ class SimpleTimeIt:
             results = []
             title = 'args: {args}'.format(args=args)
 
-            for func in self._functions:
-                r = self._run_setup_and_func_with_args(setup, func, args)
-                results.append(r._replace(timedfunction=func))
+            results = tuple(
+                (func, self._run_setup_and_func_with_args(setup, func, args))
+                for func in self._functions)
+
             print(report_function(results, title=title) + '\n', file=out)
         return out.getvalue() if as_string else None
 

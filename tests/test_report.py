@@ -1,7 +1,7 @@
 import pytest
 
 from simpletimeit import report
-from simpletimeit.datatypes import Report
+from simpletimeit.datatypes import TimingReport
 try:
     from unittest.mock import MagicMock, Mock, patch
 except ImportError:
@@ -18,12 +18,12 @@ def sample_reports():
     def foo(): pass
     def bar(): pass
     def baz(): pass
-    reports = (Report(best=25800.1657080008881, number=1000, repeat=3,
-                      timedfunction=foo),
-               Report(best=13100.85698659945047, number=10000, repeat=3,
-                      timedfunction=bar),
-               Report(best=1100.317414549994282, number=100000, repeat=3,
-                      timedfunction=baz))
+    reports = ((foo, TimingReport(best=25800.1657080008881, number=1000,
+                                  repeat=3)),
+               (bar, TimingReport(best=13100.85698659945047, number=10000,
+                                  repeat=3)),
+               (baz, TimingReport(best=1100.317414549994282, number=100000,
+                                  repeat=3)))
     expected = '\n'.join(('test      msec    loops    best of',
                           '------  ------  -------  ---------',
                           'foo      25.80     1000          3',
@@ -49,8 +49,8 @@ def test_generate_table(empty_table):
 
 def test_get_row(empty_table):
     def foo(): pass
-    result = empty_table.get_row(Report(best=1, number=2, repeat=3,
-                                        timedfunction=foo))
+    timing = TimingReport(best=1, number=2, repeat=3)
+    result = empty_table.get_row(foo, timing)
     expected = ('foo', 1, 2, 3)
     assert all(e == r for e, r in zip(expected, result))
 

@@ -2,11 +2,10 @@ from __future__ import division
 
 import timeit
 
-from .datatypes import Report
+from .datatypes import TimingReport
 
 
-def adaptiverun(stmt, setup='pass', number=0,
-                repeat=3, _wrap_timer=None):
+def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
     """
     Adaptively chooses a number of times to execute stmt, then does so repeat
     times. It chooses a number of executions such that each set of loops takes
@@ -31,7 +30,6 @@ def adaptiverun(stmt, setup='pass', number=0,
                 break
     results = t.repeat(repeat, number)
     best = min(results) * 1e6 / number
-    return Report(best=best,
-                  number=number,
-                  repeat=repeat,
-                  timedfunction=None)
+    return TimingReport(best=best,
+                        number=number,
+                        repeat=repeat)

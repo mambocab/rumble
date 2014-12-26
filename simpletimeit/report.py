@@ -2,10 +2,11 @@ from __future__ import division
 
 from tabulate import tabulate
 
-
 class SimpleTabulator():
     def __init__(self, results, title):
-        self._results = tuple(results)
+        """Accepts an iterable of (function, timingreport) pairs and a title
+        for the comparison table."""
+        self._results = results
         self._title = title
 
     def render_table(self):
@@ -14,18 +15,20 @@ class SimpleTabulator():
             return ''
 
         # find the string for the units and the divisor to convert from usecs
-        units, unit_divisor = self.units_and_divisor(min(r.best for r in
-                                                         self._results))
+        smallest = min(result.best for function, result in self._results)
+        units, unit_divisor = self.units_and_divisor(smallest)
         # convert each result to its display value
-        normalized_results = tuple(r._replace(best=r.best / unit_divisor)
-                                   for r in self._results)
+        normalized_results = tuple(
+            (func, result._replace(best=result.best / unit_divisor))
+            for func, result in self._results)
 
-        table = tuple(self.get_row(r) for r in normalized_results)
+        table = tuple(self.get_row(func, result)
+                      for func, result in normalized_results)
         return tabulate(table, tablefmt='simple', floatfmt='.2f',
                         headers=self.header(self._title, units))
 
-    def get_row(self, result):
-        return (result.timedfunction.__name__,
+    def get_row(self, func, result):
+        return (func.__name__,
                 result.best,
                 result.number,  # number of loops / repeat
                 result.repeat)
