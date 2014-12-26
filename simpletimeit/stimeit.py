@@ -7,7 +7,7 @@ import six
 from .adaptiverun import adaptiverun
 from .datatypes import ArgsAndSetup
 from .report import generate_table
-from .utils import ordered_uniques, repr_is_constructor
+from .utils import repr_is_constructor
 
 _stimeit_current_function = None
 _dummy = object()
@@ -22,8 +22,15 @@ def current_function(f):
 
 
 class SimpleTimeIt:
+    """A class for running simple performance comparisons between functions.
+
+    Typically, you will use call_with to add a number of arguments and
+    optional setup routines, and time_this to register a number of functions to
+    be compared. Then, calling run will run each function with each argument
+    list and print a table comparing the functions on each argument."""
 
     def __init__(self):
+        """Initializes a SimpleTimeIt object."""
         self._functions = []
         self._args_setups = []
 
@@ -39,7 +46,7 @@ class SimpleTimeIt:
 
             @st.time_this
             foo(name, n, x=15):
-                ...
+                pass
 
         Then `st.run()` will call (the equivalent of)
 
@@ -60,12 +67,12 @@ class SimpleTimeIt:
                  or repr_is_constructor(args))
         if not valid:
             raise ValueError(
-                ('{a} will be passed to a format string, which will then be '
-                 'executed as Python code. Thus, arguments must either be a '
-                 'string to be evaluated as the arguments to the timed '
+                ('{args} will be passed to a format string, which will then '
+                 'be executed as Python code. Thus, arguments must either be '
+                 'a string to be evaluated as the arguments to the timed '
                  'function, or be a value whose string representation '
                  'constructs an identical object. see the `call_with` '
-                 'documentation for more details.').format(a=a))
+                 'documentation for more details.').format(args=args))
         if not (isinstance(setup, six.string_types) or callable(setup)):
             raise ValueError(
                 "'setup' argument must be a string or callable.")
@@ -79,7 +86,8 @@ class SimpleTimeIt:
         self._functions.append(f)
         return f
 
-    def _prepared_setup(self, setup):
+    def _prepared_setup(self, setup, func):
+        """Generates the setup routine for a given timing run."""
         setup_template = (
             'from simpletimeit.stimeit import _stimeit_current_function\n'
             '{setup}')
@@ -94,29 +102,47 @@ class SimpleTimeIt:
         else:
             raise ValueError("'setup' must be a string or callable")
 
-    def run(self, report_function=generate_table,
-            as_string=False):
-        out = six.StringIO() if as_string else None
-
+    def _run_setup_and_func_with_args(self, setup, func, args):
+        # assumes args == eval(str(args)) or that args is a string
+        # (this property checked in call_with)
         stmt_template = '_stimeit_current_function({args})'
+        with current_function(func):
+            return adaptiverun(stmt=stmt_template.format(args=args),
+                               setup=self._prepared_setup(setup, func),
+                               title=repr(args))
+
+    def run(self, report_function=generate_table, as_string=False):
+        """Runs each of the functions registered with this SimpleTimeIt using
+        each arguments-setup pair registered with this SimpleTimeIt.
+
+        report_function should take a list of objects conforming to the
+        Report API and return a string reporting on the comparison.
+
+        If as_string is True, this function returns the table or tables
+        generated as a string. Otherwise, it prints the tables to stdout and
+        returns None."""
+        out = six.StringIO() if as_string else None
 
         for x in self._args_setups:
             args, setup = x.args, x.setup
-            # print(args) ; exit()
             results = []
             title = 'args: {args}'.format(args=args)
 
             for func in self._functions:
-                # assumes args == eval(str(args)) (checked in call_with)
-                with current_function(func):
-                    r = adaptiverun(stmt=stmt_template.format(args=args),
-                                    setup=self._prepared_setup(setup),
-                                    title=repr(args))
+                r = self._run_setup_and_func_with_args(setup, func, args)
                 results.append(r._replace(timedfunction=func))
-
             print(report_function(results, title=title) + '\n', file=out)
-
         return out.getvalue() if as_string else None
+
+    @property
+    def functions():
+        for x in self._fuctions:
+            yield x
+
+    @property
+    def args_setups():
+        for x in self._args_setups:
+            yield x
 
 _module_instance = SimpleTimeIt()
 
