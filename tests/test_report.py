@@ -53,7 +53,6 @@ def test_get_row(empty_table):
                                         timedfunction=foo))
     expected = ('foo', 1, 2, 3)
     assert all(e == r for e, r in zip(expected, result))
-    assert False
 
 def test_initialization():
     expected_results, expected_title = (34, 45), 56
