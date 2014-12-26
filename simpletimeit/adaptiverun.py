@@ -5,7 +5,7 @@ import timeit
 from .datatypes import Report
 
 
-def adaptiverun(stmt, title, setup='pass', number=0,
+def adaptiverun(stmt, setup='pass', number=0,
                 repeat=3, _wrap_timer=None):
     """
     Adaptively chooses a number of times to execute stmt, then does so repeat
