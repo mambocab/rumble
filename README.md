@@ -20,13 +20,15 @@ Now, you can do this:
 ```python
 from simpletimeit import stimeit
 
-time_args = ('range(100000), num=10', 'range(1000000), num=2')
+st = stimeit.SimpleTimeIt()
+st.call_with([1, 4, 5], num=10)
+st.call_with([1, 3, 1], num=11)
 
-@stimeit.time_this(func_input=time_args)
+@stimeit.time_this
 def generator(iterator, num):
     ...
 
-@stimeit.time_this(func_input=time_args)
+@stimeit.time_this
 def for_loop(iterator, num):
     ...
 
