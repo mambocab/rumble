@@ -15,6 +15,8 @@ You want to compare runtimes for different implementations of a function -- let'
     - `python -m timeit -s 'import functime' 'for_loop(range(1000000), num=2)'`
 - Look back through your shell history to see what happened.
 
+[Isn't that hard?](http://www.buzzfeed.com/julianbrand/40-gifs-of-stupid-infomercial-people-6eof)
+
 Now, you can do this:
 
 ```python
