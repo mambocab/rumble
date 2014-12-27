@@ -4,9 +4,9 @@ from simpletimeit import stimeit
 
 st = stimeit.SimpleTimeIt()
 
-st.call_with('10, 100')
-st.call_with('8000, 92833')
-st.call_with('898989, 1000000000001')
+st.call_with(10, 100)
+st.call_with(8000, 92833)
+st.call_with(898989, 1000000000001)
 
 @st.time_this
 def divide(a, b):
