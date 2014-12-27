@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from six import string_types
 
@@ -10,6 +12,8 @@ from simpletimeit import stimeit
 from simpletimeit.datatypes import TimingReport
 
 slow = pytest.mark.slow
+
+pypy2 = sys.version_info[0] < 3 and hasattr(sys, 'pypy_translation_info')
 
 def test_call_with_values():
     st = stimeit.SimpleTimeIt()
@@ -241,6 +245,8 @@ def test_run_and_print_return_value(capsys, mock_three_results):
     assert st.run() == None
 
 
+# capsys seems to be failing under pypy but not pypy2
+@pytest.mark.xfail(pypy2)
 def test_run_and_print_print_result(capsys, mock_three_results):
     st = mock_three_results['st']
     st.call_with('test')
