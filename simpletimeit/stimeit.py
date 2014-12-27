@@ -15,6 +15,8 @@ _dummy = object()
 
 @contextmanager
 def current_function(f):
+    """Adds f to the module namespace as _stimeit_current_function, then
+    removes it when exiting this context."""
     global _stimeit_current_function
     _stimeit_current_function = f
     yield
