@@ -1,3 +1,6 @@
+from itertools import chain, filterfalse
+
+
 def ordered_uniques(xs):
     yielded = set()
     for x in xs:
@@ -13,5 +16,12 @@ def repr_is_constructor(obj):
         return False
 
 
-def indented(s, prefix='    '):
-    return '\n'.join(prefix + line for line in s.splitlines())
+def args_to_string(*args, **kwargs):
+    invalid = tuple(filterfalse(repr_is_constructor,
+                                chain(args, kwargs.values())))
+    if invalid:
+        raise ValueError
+
+    return ', '.join(chain((repr(a) for a in args),
+                            ('{0}={1}'.format(str(k), repr(v))
+                             for k, v in kwargs.items())))

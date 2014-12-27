@@ -7,9 +7,8 @@ import six
 from .adaptiverun import adaptiverun
 from .datatypes import ArgsAndSetup
 from .report import generate_table
-from .utils import repr_is_constructor
+from .utils import repr_is_constructor, args_to_string
 
-_stimeit_current_function = None
 _dummy = object()
 
 
@@ -20,7 +19,7 @@ def current_function(f):
     global _stimeit_current_function
     _stimeit_current_function = f
     yield
-    _stimeit_current_function = None
+    del _stimeit_current_function
 
 
 class SimpleTimeIt:
@@ -36,7 +35,7 @@ class SimpleTimeIt:
         self._functions = []
         self._args_setups = []
 
-    def call_with(self, args, setup='pass'):
+    def call_with(self, *args, **kwargs):
         """Resisters a string as the argument list to the functions
         to be called as part of the performance comparisons. For instance, if
         a SimpleTimeIt is specified as follows:
@@ -44,7 +43,7 @@ class SimpleTimeIt:
             from simpletimeit.stimeit import SimpleTimeIt
 
             st = SimpleTimeIt()
-            st.call_with("'Eric', 3, x=10")
+            st.call_with('Eric', 3, x=10)
 
             @st.time_this
             foo(name, n, x=15):
@@ -61,25 +60,34 @@ class SimpleTimeIt:
         `10 == eval('10')` and `{a: 10, b: 15} == eval('{a: 10, b: 15}')`, but
         `range(10)` will not work because `range(10) != eval('range(10)').
 
-        Takes an optional 'setup' argument. This string will be evaluated
-        before the timing runs, as with the 'setup' argument to Timer. This
-        value is 'pass' by default.
+        Takes an optional '_setup' argument. This string or callable will be
+        evaluated before the timing runs, as with the 'setup' argument to
+        Timer. This value is 'pass' by default.
         """
-        valid = (isinstance(args, six.string_types)
-                 or repr_is_constructor(args))
-        if not valid:
+        # _setup is a fake kwarg so all other arguments are captured by args
+        _setup = kwargs.get('_setup', 'pass')
+        try:
+            del kwargs['_setup']
+        except KeyError:
+            pass
+        try:
+            arg_string = args_to_string(*args, **kwargs)
+        except ValueError:
             raise ValueError(
-                ('{args} will be passed to a format string, which will then '
-                 'be executed as Python code. Thus, arguments must either be '
-                 'a string to be evaluated as the arguments to the timed '
-                 'function, or be a value whose string representation '
-                 'constructs an identical object. see the `call_with` '
-                 'documentation for more details.').format(args=args))
-        if not (isinstance(setup, six.string_types) or callable(setup)):
-            raise ValueError(
-                "'setup' argument must be a string or callable.")
+                '{args} will be passed to a format string, which will then '
+                'be executed as Python code. Thus, arguments must either be '
+                'a string to be evaluated as the arguments to the timed '
+                'function, or be a value whose string representation '
+                'constructs an identical object. see the `call_with` '
+                'documentation for more details.'.format(args=args))
 
-        self._args_setups.append(ArgsAndSetup(args=str(args), setup=setup))
+
+        if not (isinstance(_setup, six.string_types) or callable(_setup)):
+            raise ValueError(
+                "'_setup' argument must be a string or callable.")
+
+        self._args_setups.append(ArgsAndSetup(args=str(arg_string),
+                                              setup=_setup))
 
     def time_this(self, f):
         """A decorator. Registers the decorated function as a TimedFunction
