@@ -11,6 +11,7 @@ from simpletimeit.datatypes import TimingReport
 
 slow = pytest.mark.slow
 
+
 def test_call_with_values():
     st = stimeit.SimpleTimeIt()
     args = ['foo', {'a': 1, 'b': 2}, 19]
@@ -45,9 +46,6 @@ def test_call_with_setup():
 
 def test_call_with_invalid_input():
     st = stimeit.SimpleTimeIt()
-    with pytest.raises(ValueError):
-        # repr(map(...)) doesn't look like declaration of that map
-        st.call_with(map(str, (1, 2, 4, 8, 16)))
     with pytest.raises(ValueError):
         st.call_with(lambda x: None)
 
@@ -244,6 +242,9 @@ def test_run_and_print_return_value(capsys, mock_three_results):
     assert st.run() == None
 
 
+# capsys seems to be failing under pypy but not pypy2
+pypy2 = "sys.version_info[0] < 3 and hasattr(sys, 'pypy_translation_info')"
+@pytest.mark.xfail(pypy2)
 def test_run_and_print_print_result(capsys, mock_three_results):
     st = mock_three_results['st']
     st.call_with('test')
