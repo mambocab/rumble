@@ -11,12 +11,17 @@ python:
   - "pypy"
   - "pypy3"
 
-# command to install dependencies, e.g. pip install -r requirements.txt --use-mirrors
 install:
   - pip install -r requirements.txt
   - pip install -r dev-requirements.txt
-  - pip install coveralls
 
-# command to run tests, e.g. python setup.py test
-script: py.test --cov simpletimeit
+# each file should be completely covered by its test suite
+script:
+  - py.test --cov simpletimeit/adaptiverun.py tests/test_adaptiverun.py; coverage report --show-missing --fail-under=100
+  - py.test --cov simpletimeit/report.py tests/test_report.py && coverage report --show-missing --fail-under=100
+  - py.test --cov simpletimeit/stimeit.py tests/test_stimeit.py && coverage report --show-missing --fail-under=100
+  - py.test --cov simpletimeit/utils.py tests/test_utils.py && coverage report --show-missing --fail-under=100
+  # finally, actually run tests
+  - py.test --cov simpletimeit && coverage report --show-missing --fail-under=100
+
 after_success: coveralls
