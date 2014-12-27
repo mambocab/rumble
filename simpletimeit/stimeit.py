@@ -120,6 +120,11 @@ class SimpleTimeIt:
             return adaptiverun(stmt=stmt_template.format(args=args),
                                setup=self._prepared_setup(setup, func))
 
+    def _get_results(self, setup, args):
+        return tuple((func,
+                      self._run_setup_and_func_with_args(setup, func, args))
+                     for func in self._functions)
+
     def run(self, report_function=generate_table, as_string=False):
         """Runs each of the functions registered with this SimpleTimeIt using
         each arguments-setup pair registered with this SimpleTimeIt.
@@ -137,22 +142,11 @@ class SimpleTimeIt:
             results = []
             title = 'args: {args}'.format(args=args)
 
-            results = tuple(
-                (func, self._run_setup_and_func_with_args(setup, func, args))
-                for func in self._functions)
+            results = self._get_results(setup, args)
 
             print(report_function(results, title=title) + '\n', file=out)
         return out.getvalue() if as_string else None
 
-    @property
-    def functions():
-        for x in self._fuctions:
-            yield x
-
-    @property
-    def args_setups():
-        for x in self._args_setups:
-            yield x
 
 _module_instance = SimpleTimeIt()
 
