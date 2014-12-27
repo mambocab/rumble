@@ -114,6 +114,12 @@ def test_prepared_setup_string_result():
     assert st._prepared_setup(setup_string, lambda: None) == expected
 
 
+def test_setup_error_on_invalid_type():
+    st = stimeit.SimpleTimeIt()
+    with pytest.raises(ValueError):
+        st.call_with(None, _setup=7)
+
+
 def test_prepared_setup_callable_result_is_callable():
     st = stimeit.SimpleTimeIt()
     assert callable(st._prepared_setup(lambda: None, None))

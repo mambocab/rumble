@@ -5,7 +5,7 @@ import timeit
 from .datatypes import TimingReport
 
 
-def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
+def adaptiverun(stmt, setup='pass', number=0, repeat=3):
     """
     Adaptively chooses a number of times to execute stmt, then does so repeat
     times. It chooses a number of executions such that each set of loops takes
@@ -18,8 +18,6 @@ def adaptiverun(stmt, setup='pass', number=0, repeat=3, _wrap_timer=None):
     https://hg.python.org/cpython/file/3.4/Lib/timeit.py
     """
     timer = timeit.default_timer
-    if _wrap_timer is not None:
-        timer = _wrap_timer(timer)
     t = timeit.Timer(stmt, setup, timer)
     if number == 0:
         # determine number so that 0.2 <= total time < 2.0

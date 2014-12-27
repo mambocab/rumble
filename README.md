@@ -1,5 +1,8 @@
 # Simple Timeit
 
+[![Build Status](https://travis-ci.org/mambocab/simpletimeit.svg?branch=master)](https://travis-ci.org/mambocab/simpletimeit)
+[![Coverage Status](https://img.shields.io/coveralls/mambocab/simpletimeit.svg)](https://coveralls.io/r/mambocab/simpletimeit?branch=master)
+
 A library for easily comparing function runtimes.
 
 You want to compare runtimes for different implementations of a function -- let's call it `func`. The way you used to do this:
@@ -12,18 +15,22 @@ You want to compare runtimes for different implementations of a function -- let'
     - `python -m timeit -s 'import functime' 'for_loop(range(1000000), num=2)'`
 - Look back through your shell history to see what happened.
 
+[Isn't that hard?](http://www.buzzfeed.com/julianbrand/40-gifs-of-stupid-infomercial-people-6eof)
+
 Now, you can do this:
 
 ```python
 from simpletimeit import stimeit
 
-time_args = ('range(100000), num=10', 'range(1000000), num=2')
+st = stimeit.SimpleTimeIt()
+st.call_with([1, 4, 5], num=10)
+st.call_with([1, 3, 1], num=11)
 
-@stimeit.time_this(func_input=time_args)
+@stimeit.time_this
 def generator(iterator, num):
     ...
 
-@stimeit.time_this(func_input=time_args)
+@stimeit.time_this
 def for_loop(iterator, num):
     ...
 
