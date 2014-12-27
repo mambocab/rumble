@@ -1,5 +1,8 @@
 # Simple Timeit
 
+[![Build Status](https://travis-ci.org/mambocab/simpletimeit.svg?branch=master)](https://travis-ci.org/mambocab/simpletimeit)
+[![Coverage Status](https://img.shields.io/coveralls/mambocab/simpletimeit.svg)](https://coveralls.io/r/mambocab/simpletimeit?branch=release%2Fimprove-tests)
+
 A library for easily comparing function runtimes.
 
 You want to compare runtimes for different implementations of a function -- let's call it `func`. The way you used to do this:
