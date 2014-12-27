@@ -1,7 +1,7 @@
 # Simple Timeit
 
 [![Build Status](https://travis-ci.org/mambocab/simpletimeit.svg?branch=master)](https://travis-ci.org/mambocab/simpletimeit)
-[![Coverage Status](https://img.shields.io/coveralls/mambocab/simpletimeit.svg)](https://coveralls.io/r/mambocab/simpletimeit?branch=release%2Fimprove-tests)
+[![Coverage Status](https://img.shields.io/coveralls/mambocab/simpletimeit.svg)](https://coveralls.io/r/mambocab/simpletimeit?branch=master)
 
 A library for easily comparing function runtimes.
 
