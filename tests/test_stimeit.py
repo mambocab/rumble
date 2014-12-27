@@ -278,5 +278,26 @@ def test_run_doesnt_die():
     st.call_with(2)
     st.run()
 
-# test that module_instance works and doesn't die
+
+@slow
+def test_run_doesnt_die():
+    @stimeit.time_this
+    def foo(x):
+        pass
+
+    stimeit.call_with(2)
+    stimeit.run()
+
+    # teardown
+    stimeit.reset()
+
+
 # test that reset gives you a new _module_instance
+def test_module_instance():
+    st = stimeit._module_instance
+    assert isinstance(st, stimeit.SimpleTimeIt)
+
+    stimeit.reset()
+
+    assert isinstance(st, stimeit.SimpleTimeIt)
+    assert st is not stimeit._module_instance
