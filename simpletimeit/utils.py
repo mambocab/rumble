@@ -1,5 +1,6 @@
-from itertools import chain, filterfalse
+from itertools import chain
 
+from six.moves import filterfalse
 
 def ordered_uniques(xs):
     yielded = set()
