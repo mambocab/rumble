@@ -43,6 +43,7 @@ def test_call_with_setup():
 def test_call_with_invalid_input():
     st = stimeit.SimpleTimeIt()
     with pytest.raises(ValueError):
+        # repr(map(...)) doesn't look like declaration of that map
         st.call_with(map(str, (1, 2, 4, 8, 16)))
     with pytest.raises(ValueError):
         st.call_with(lambda x: None)
@@ -63,7 +64,6 @@ def test_current_function():
         stimeit._stimeit_current_function
 
 
-# test _functions gets value on with time_this used as decorator
 def test_time_this_length():
     for n in (1, 2, 3, 7, 42, 85):
         st = stimeit.SimpleTimeIt()
