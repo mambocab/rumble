@@ -19,3 +19,4 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script: py.test --with-coverage --cover-package simpletimeit
+after_success: coveralls
