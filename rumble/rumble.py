@@ -40,16 +40,16 @@ class Rumble:
         to be called as part of the performance comparisons. For instance, if
         a Rumble is specified as follows:
 
-            from Rumble.rumble import Rumble
+            from rumble.rumble import Rumble
 
-            st = Rumble()
-            st.arguments('Eric', 3, x=10)
+            r = Rumble()
+            r.arguments('Eric', 3, x=10)
 
-            @st.time_this
+            @r.time_this
             foo(name, n, x=15):
                 pass
 
-        Then `st.run()` will call (the equivalent of)
+        Then `r.run()` will call (the equivalent of)
 
             exec('foo({args})'.format(args="'Eric', 3, x=10"))
 

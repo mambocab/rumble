@@ -5,13 +5,13 @@
 
 This is a Python library for easily comparing function runtimes. It's well-tested on 2.6, 2.7, 3.3, 3.4, PyPy's Python 2 and 3 implementations.
 
-You want to compare runtimes for different implementations of a function -- let's call it `primes`. The way you used to do this:
+You want to compare runtimes for different implementations of a function -- let's call it `primes`. It outputs a list of all primes up to and including its argument. The way you used to do this:
 
-- Create a file called `functime.py`. Paste in the different implementations of the function into that file -- let's say one uses a naive implementation, and the other uses the Sieve of Eratosthenes.
+- Create a file called `functime.py`. Paste in the different implementations of the function into that file -- let's say one uses a naive implementation that checks all numbers below its argument, and the other uses the Sieve of Eratosthenes.
 - Run a bunch of `timeit` commands:
-    - `python -m timeit -s 'import functime' 'naive(50)'`, and then
+    - `python -m timeit -s 'import functime' 'check_all(50)'`, and then
     - `python -m timeit -s 'import functime' 'sieve(50)'`, and then
-    - `python -m timeit -s 'import functime' 'naive(100)'`, and then
+    - `python -m timeit -s 'import functime' 'check_all(100)'`, and then
     - `python -m timeit -s 'import functime' 'sieve(100)'`
 - Look back through your shell history to see what happened.
 
@@ -26,7 +26,7 @@ rumble.arguments(50)
 rumble.arguments(100)
 
 @rumble.contender
-def naive(n):
+def check_all(n):
     ...
 
 @rumble.contender
@@ -57,6 +57,7 @@ See the `examples` directory for examples of use. At a high level:
 - Optionally, create a new `Rumble` object. If you'd rather, you can simply call methods from the module itself as well.
 - Decorate some functions as `contenders` in the `Rumble`.
 - Add some arguments with the `arguments` method. This method accepts arbitrary numbers of arguments, including keyword arguments.
+    - You can also specify code to be executed before the timing runs with the `_setup` keyword argument.
     - (For now, each argument `a` must conform to the condition `a == exec(repr(a))`. So, for instance, `[1, None]` works, but `lambda: None` does not.)
 - Call the `run` method to time the functions and print your tables!
     - You can also call `run(as_string=True)` to return the output as a string
