@@ -26,7 +26,7 @@ class Rumble:
     """A class for running simple performance comparisons between functions.
 
     Typically, you will use arguments to add a number of arguments and
-    optional setup routines, and time_this to register a number of functions to
+    optional setup routines, and contender to register a number of functions to
     be compared. Then, calling run will run each function with each argument
     list and print a table comparing the functions on each argument."""
 
@@ -45,7 +45,7 @@ class Rumble:
             r = Rumble()
             r.arguments('Eric', 3, x=10)
 
-            @r.time_this
+            @r.contender
             foo(name, n, x=15):
                 pass
 
@@ -89,7 +89,7 @@ class Rumble:
         self._args_setups.append(ArgsAndSetup(args=str(arg_string),
                                               setup=_setup))
 
-    def time_this(self, f):
+    def contender(self, f):
         """A decorator. Registers the decorated function as a TimedFunction
         with this Rumble, leaving the function unchanged.
         """
@@ -155,6 +155,6 @@ def reset():
     global _module_instance
     _module_instance = Rumble()
 
-time_this = _module_instance.time_this
+contender = _module_instance.contender
 arguments = _module_instance.arguments
 run = _module_instance.run

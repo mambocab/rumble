@@ -65,38 +65,38 @@ def test_current_function():
         rumble._rumble_current_function
 
 
-def test_time_this_length():
+def test_contender_length():
     for n in (1, 2, 3, 7, 42, 85):
         st = rumble.Rumble()
         for _ in range(n):
-            @st.time_this
+            @st.contender
             def foo():
                 pass
         assert len(st._functions) == n
 
 
-def test_time_this_values():
+def test_contender_values():
     st = rumble.Rumble()
 
-    @st.time_this
+    @st.contender
     def foo():
         pass
-    @st.time_this
+    @st.contender
     def bar():
         pass
-    @st.time_this
+    @st.contender
     def baz():
         pass
 
     assert st._functions == [foo, bar, baz]
 
 
-def test_time_this_add_to_multiple_Rumbles():
+def test_contender_add_to_multiple_Rumbles():
     st_a = rumble.Rumble()
     st_b = rumble.Rumble()
 
-    @st_a.time_this
-    @st_b.time_this
+    @st_a.contender
+    @st_b.contender
     def foo():
         pass
 
@@ -177,7 +177,7 @@ def test_run_setup_and_func_with_args_called_times(monkeypatch):
     monkeypatch.setattr(rumble, 'adaptiverun', Mock())
 
     for func in (None for _ in range(4)):
-        st.time_this(func)
+        st.contender(func)
     setup, func = Mock(), Mock()
     st._get_results(setup, None)
 
@@ -193,7 +193,7 @@ def test_run_setup_and_func_with_args_called_times(monkeypatch):
         st._run_setup_and_func_with_args = Mock()
 
         for func in (None for _ in range(n)):
-            st.time_this(func)
+            st.contender(func)
         setup, func = Mock(), Mock()
         result = st._get_results(setup, None)
 
@@ -206,7 +206,7 @@ def test_get_results_functions_order(monkeypatch):
 
     funcs = [Mock(), Mock(), Mock(), Mock(), Mock()]
     for f in funcs:
-        st.time_this(f)
+        st.contender(f)
 
     assert [r[0] for r in st._get_results('pass', None)] == funcs
 
@@ -230,7 +230,7 @@ def mock_three_results():
     st._get_results.return_value = data
 
     for _ in range(len(data)):
-        st.time_this(lambda: None)
+        st.contender(lambda: None)
 
     return dict(st=st, expected=expected)
 
@@ -263,7 +263,7 @@ def test_run_calls_report_function_times(capsys):
     for n in (2, 10):
         st = rumble.Rumble()
         st._get_results = Mock()
-        st.time_this(None)
+        st.contender(None)
 
         for x in range(n):
             st.arguments(x)
@@ -278,7 +278,7 @@ def test_run_calls_report_function_times(capsys):
 def test_run_doesnt_die():
     st = rumble.Rumble()
 
-    @st.time_this
+    @st.contender
     def foo(x):
         pass
 
@@ -288,7 +288,7 @@ def test_run_doesnt_die():
 
 @slow
 def test_run_doesnt_die():
-    @rumble.time_this
+    @rumble.contender
     def foo(x):
         pass
 

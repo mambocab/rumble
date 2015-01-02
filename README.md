@@ -36,7 +36,7 @@ def sieve(n):
 rumble.run()
 ```
 
-and it prints out a table, much more readable than your shell history:
+and it prints out a table showing the runtimes of each of the contenders. I think it's much more readable than your shell history:
 
 ```
 args: 100      usec    loops    best of
