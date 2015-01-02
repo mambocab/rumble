@@ -14,6 +14,7 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install -r dev-requirements.txt
+  - pip install .
 
 script:
   # each module should be completely covered by its test suite
@@ -26,7 +27,6 @@ script:
   - py.test --cov rumble && coverage report --show-missing --fail-under=100
 
   # also sure none of the examples die
-  - pip install .
   - python examples/example.py
   - python examples/primeexample.py
   - python examples/classexample.py
