@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from simpletimeit import utils
+from rumble import utils
 
 
 def test_empty():

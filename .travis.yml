@@ -14,14 +14,22 @@ python:
 install:
   - pip install -r requirements.txt
   - pip install -r dev-requirements.txt
+  - pip install .
 
-# each file should be completely covered by its test suite
 script:
-  - py.test --cov simpletimeit/adaptiverun.py tests/test_adaptiverun.py; coverage report --show-missing --fail-under=100
-  - py.test --cov simpletimeit/report.py tests/test_report.py && coverage report --show-missing --fail-under=100
-  - py.test --cov simpletimeit/stimeit.py tests/test_stimeit.py && coverage report --show-missing --fail-under=100
-  - py.test --cov simpletimeit/utils.py tests/test_utils.py && coverage report --show-missing --fail-under=100
-  # finally, actually run tests
-  - py.test --cov simpletimeit && coverage report --show-missing --fail-under=100
+  # each module should be completely covered by its test suite
+  - py.test --cov rumble/adaptiverun.py tests/test_adaptiverun.py; coverage report --show-missing --fail-under=100
+  - py.test --cov rumble/report.py tests/test_report.py && coverage report --show-missing --fail-under=100
+  - py.test --cov rumble/stimeit.py tests/test_stimeit.py && coverage report --show-missing --fail-under=100
+  - py.test --cov rumble/utils.py tests/test_utils.py && coverage report --show-missing --fail-under=100
+
+  # actually run tests and generate final coverage report
+  - py.test --cov rumble && coverage report --show-missing --fail-under=100
+
+  # also sure none of the examples die
+  - python examples/example.py
+  - python examples/primeexample.py
+  - python examples/classexample.py
+  - python examples/multiargsexample.py
 
 after_success: coveralls

@@ -1,7 +1,7 @@
 import pytest
 
-from simpletimeit import report
-from simpletimeit.datatypes import TimingReport
+from rumble import report
+from rumble.datatypes import TimingReport
 try:
     from unittest.mock import MagicMock, Mock, patch
 except ImportError:
