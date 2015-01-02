@@ -18,7 +18,7 @@ test_requirements = [
 
 setup(
     name='rumble',
-    version='0.0.4',
+    version='0.0.6',
     description='A library for easily comparing function runtimes.',
     long_description=readme,
     author='Jim Witschey',
