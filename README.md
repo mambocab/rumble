@@ -3,7 +3,19 @@
 [![Build Status](https://travis-ci.org/mambocab/rumble.svg?branch=master)](https://travis-ci.org/mambocab/rumble)
 [![Coverage Status](https://img.shields.io/coveralls/mambocab/rumble.svg)](https://coveralls.io/r/mambocab/rumble?branch=master)
 
-This is a Python library for easily comparing function runtimes. It's well-tested on 2.6, 2.7, 3.3, 3.4, PyPy's Python 2 and 3 implementations.
+This is a Python library for easily comparing function runtimes. It's well-tested on 2.6, 2.7, 3.3, 3.4, PyPy's Python 2 and 3 implementations. 
+
+## Quickstart
+
+Install with
+
+```sh
+pip install rumble
+```
+
+and see the `examples` directory here on GitHub for basic use.
+
+## Slightly Slower Start
 
 You want to compare runtimes for different implementations of a function -- let's call it `primes`. It outputs a list of all primes up to and including its argument. The way you used to do this:
 
