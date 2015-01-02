@@ -33,3 +33,12 @@ script:
   - python examples/multiargsexample.py
 
 after_success: coveralls
+deploy:
+  provider: pypi
+  user: mambocab
+  password:
+    secure: IvVB8f5Mkuqe0yqE1hEF+MSa3MFJPIwocINYw6U9Xb/DpgjeQyysAbJhRpwcIVIUzP7ZH48HM/G0Y+AnK/4mt5DtXVT5MZogmym5nfcqLPaESdinbtuySeJ5wmD0FvnDAcb0WCQQxJrn8oAK8gAeQZB42579YUAt1l+vu2Ij7iw=
+  on:
+    tags: true
+    repo: mambocab/rumble
+    branch: master
