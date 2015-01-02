@@ -33,7 +33,7 @@ setup(
     install_requires=requirements,
     license='MIT',
     zip_safe=False,
-    keywords='rumble, timeit',
+    keywords='rumble, timeit, runtime',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',

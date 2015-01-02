@@ -6,68 +6,68 @@ try:
 except ImportError:
     from mock import Mock
 
-from simpletimeit import stimeit
-from simpletimeit.datatypes import TimingReport
+from rumble import rumble
+from rumble.datatypes import TimingReport
 
 slow = pytest.mark.slow
 
 
-def test_call_with_values():
-    st = stimeit.SimpleTimeIt()
+def test_arguments_values():
+    st = rumble.Rumble()
     args = ['foo', {'a': 1, 'b': 2}, 19]
     for a in args:
-        st.call_with(a)
+        st.arguments(a)
     assert [x.args for x in st._args_setups] == list(map(repr, args))
 
 
-def test_call_with_args_length():
+def test_arguments_args_length():
     for n in (1, 2, 3, 7, 39, 99):
-        st = stimeit.SimpleTimeIt()
+        st = rumble.Rumble()
         for _ in range(n):
-            st.call_with('')
+            st.arguments('')
         assert len(st._args_setups) == n
 
 
-def test_call_with_setup_default():
-    st = stimeit.SimpleTimeIt()
+def test_arguments_setup_default():
+    st = rumble.Rumble()
     args = ['foo', 'bar']
     for a in args:
-        st.call_with(a)
+        st.arguments(a)
     assert [x.setup for x in st._args_setups] == ['pass', 'pass']
 
 
-def test_call_with_setup():
-    st = stimeit.SimpleTimeIt()
+def test_arguments_setup():
+    st = rumble.Rumble()
     setups = ['import foo', 'import bar', 'import baz']
     for s in setups:
-        st.call_with('', _setup=s)
+        st.arguments('', _setup=s)
     assert [x.setup for x in st._args_setups] == setups
 
 
-def test_call_with_invalid_input():
-    st = stimeit.SimpleTimeIt()
+def test_arguments_invalid_input():
+    st = rumble.Rumble()
     with pytest.raises(ValueError):
-        st.call_with(lambda x: None)
+        st.arguments(lambda x: None)
 
 
 def test_current_function():
-    # at first, there's no _stimeit_current_function
+    # at first, there's no _rumble_current_function
     with pytest.raises(AttributeError):
-        stimeit._stimeit_current_function
+        rumble._rumble_current_function
 
     # then it has the value of the function passed to the contextmanager
     dummy = object()
-    with stimeit.current_function(dummy):
-        assert stimeit._stimeit_current_function is dummy
+    with rumble.current_function(dummy):
+        assert rumble._rumble_current_function is dummy
 
-    # then there's no _stimeit_current_function again
+    # then there's no _rumble_current_function again
     with pytest.raises(AttributeError):
-        stimeit._stimeit_current_function
+        rumble._rumble_current_function
 
 
 def test_time_this_length():
     for n in (1, 2, 3, 7, 42, 85):
-        st = stimeit.SimpleTimeIt()
+        st = rumble.Rumble()
         for _ in range(n):
             @st.time_this
             def foo():
@@ -76,7 +76,7 @@ def test_time_this_length():
 
 
 def test_time_this_values():
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
 
     @st.time_this
     def foo():
@@ -91,9 +91,9 @@ def test_time_this_values():
     assert st._functions == [foo, bar, baz]
 
 
-def test_time_this_add_to_multiple_simpletimeits():
-    st_a = stimeit.SimpleTimeIt()
-    st_b = stimeit.SimpleTimeIt()
+def test_time_this_add_to_multiple_Rumbles():
+    st_a = rumble.Rumble()
+    st_b = rumble.Rumble()
 
     @st_a.time_this
     @st_b.time_this
@@ -105,51 +105,51 @@ def test_time_this_add_to_multiple_simpletimeits():
 
 
 def test_prepared_setup_string_result():
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
     setup_string = 'nonce'
-    expected = ('from simpletimeit.stimeit '
-                'import _stimeit_current_function\n'
+    expected = ('from rumble.rumble '
+                'import _rumble_current_function\n'
                 '{0}').format(setup_string)
 
     assert st._prepared_setup(setup_string, lambda: None) == expected
 
 
 def test_setup_error_on_invalid_type():
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
     with pytest.raises(ValueError):
-        st.call_with(None, _setup=7)
+        st.arguments(None, _setup=7)
 
 
 def test_prepared_setup_callable_result_is_callable():
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
     assert callable(st._prepared_setup(lambda: None, None))
 
 
 def test_prepared_setup_callable_calls_setup_and_sets_current_function():
     setup, func = Mock(), object()
 
-    prepped = stimeit.SimpleTimeIt()._prepared_setup(setup, func)
+    prepped = rumble.Rumble()._prepared_setup(setup, func)
     prepped()
 
-    assert stimeit._stimeit_current_function is func
+    assert rumble._rumble_current_function is func
     assert setup.call_count == 1
 
     # teardown
-    del stimeit._stimeit_current_function
+    del rumble._rumble_current_function
 
 
 def test_error_on_invalid_setup():
     setup = {'invalid': 'setup'}
     with pytest.raises(ValueError):
-        stimeit.SimpleTimeIt()._prepared_setup(setup, lambda: None)
+        rumble.Rumble()._prepared_setup(setup, lambda: None)
 
 
 # test _run_setup_and_func_with_args calls _prepared_setup(setup, func)
 def test_run_setup_and_func_with_args_calls_prepared_setup(monkeypatch):
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
     st._prepared_setup = Mock()
     m = Mock()
-    monkeypatch.setattr(stimeit, 'adaptiverun', m)
+    monkeypatch.setattr(rumble, 'adaptiverun', m)
 
     setup, func = Mock(), Mock()
     st._run_setup_and_func_with_args(setup, func, None)
@@ -159,22 +159,22 @@ def test_run_setup_and_func_with_args_calls_prepared_setup(monkeypatch):
 
 
 def test_run_setup_and_func_with_args_calls_adaptiverun(monkeypatch):
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
     st._prepared_setup = Mock()
     m = Mock()
-    monkeypatch.setattr(stimeit, 'adaptiverun', m)
+    monkeypatch.setattr(rumble, 'adaptiverun', m)
 
     setup, func = Mock(), Mock()
     st._run_setup_and_func_with_args(setup, func, None)
 
-    assert stimeit.adaptiverun.call_count == 1
+    assert rumble.adaptiverun.call_count == 1
 
 
 # test _get_results calls _run_setup_and_func_with_args once for each function registered
 def test_run_setup_and_func_with_args_called_times(monkeypatch):
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
     st._run_setup_and_func_with_args = Mock()
-    monkeypatch.setattr(stimeit, 'adaptiverun', Mock())
+    monkeypatch.setattr(rumble, 'adaptiverun', Mock())
 
     for func in (None for _ in range(4)):
         st.time_this(func)
@@ -186,10 +186,10 @@ def test_run_setup_and_func_with_args_called_times(monkeypatch):
 
 # test _get_results returns thing with proper length
 def test_run_setup_and_func_with_args_called_times(monkeypatch):
-    monkeypatch.setattr(stimeit, 'adaptiverun', Mock())
+    monkeypatch.setattr(rumble, 'adaptiverun', Mock())
 
     for n in (0, 1, 2, 10, 100):
-        st = stimeit.SimpleTimeIt()
+        st = rumble.Rumble()
         st._run_setup_and_func_with_args = Mock()
 
         for func in (None for _ in range(n)):
@@ -201,8 +201,8 @@ def test_run_setup_and_func_with_args_called_times(monkeypatch):
 
 # test functions in _get_results rv has correct function for beginning of each
 def test_get_results_functions_order(monkeypatch):
-    monkeypatch.setattr(stimeit, 'adaptiverun', Mock())
-    st = stimeit.SimpleTimeIt()
+    monkeypatch.setattr(rumble, 'adaptiverun', Mock())
+    st = rumble.Rumble()
 
     funcs = [Mock(), Mock(), Mock(), Mock(), Mock()]
     for f in funcs:
@@ -225,7 +225,7 @@ def mock_three_results():
                 'bar              10.57   100000          3\n'
                 'baz               0.82  1000000          3\n\n')
 
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
     st._get_results = Mock()
     st._get_results.return_value = data
 
@@ -237,14 +237,14 @@ def mock_three_results():
 
 def test_run_as_string(mock_three_results):
     st = mock_three_results['st']
-    st.call_with('test')
+    st.arguments('test')
 
     assert st.run(as_string=True) == mock_three_results['expected']
 
 
 def test_run_and_print_return_value(capsys, mock_three_results):
     st = mock_three_results['st']
-    st.call_with('test')
+    st.arguments('test')
     assert st.run() == None
 
 
@@ -253,7 +253,7 @@ pypy2 = "sys.version_info[0] < 3 and hasattr(sys, 'pypy_translation_info')"
 @pytest.mark.xfail(pypy2)
 def test_run_and_print_print_result(capsys, mock_three_results):
     st = mock_three_results['st']
-    st.call_with('test')
+    st.arguments('test')
     st.run()
     out, _ = capsys.readouterr()
     assert out == mock_three_results['expected']
@@ -261,12 +261,12 @@ def test_run_and_print_print_result(capsys, mock_three_results):
 
 def test_run_calls_report_function_times(capsys):
     for n in (2, 10):
-        st = stimeit.SimpleTimeIt()
+        st = rumble.Rumble()
         st._get_results = Mock()
         st.time_this(None)
 
         for x in range(n):
-            st.call_with(x)
+            st.arguments(x)
 
         report_function = Mock(return_value='')
         st.run(report_function=report_function)
@@ -276,35 +276,35 @@ def test_run_calls_report_function_times(capsys):
 
 @slow
 def test_run_doesnt_die():
-    st = stimeit.SimpleTimeIt()
+    st = rumble.Rumble()
 
     @st.time_this
     def foo(x):
         pass
 
-    st.call_with(2)
+    st.arguments(2)
     st.run()
 
 
 @slow
 def test_run_doesnt_die():
-    @stimeit.time_this
+    @rumble.time_this
     def foo(x):
         pass
 
-    stimeit.call_with(2)
-    stimeit.run()
+    rumble.arguments(2)
+    rumble.run()
 
     # teardown
-    stimeit.reset()
+    rumble.reset()
 
 
 # test that reset gives you a new _module_instance
 def test_module_instance():
-    st = stimeit._module_instance
-    assert isinstance(st, stimeit.SimpleTimeIt)
+    st = rumble._module_instance
+    assert isinstance(st, rumble.Rumble)
 
-    stimeit.reset()
+    rumble.reset()
 
-    assert isinstance(st, stimeit.SimpleTimeIt)
-    assert st is not stimeit._module_instance
+    assert isinstance(st, rumble.Rumble)
+    assert st is not rumble._module_instance

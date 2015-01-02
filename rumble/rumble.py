@@ -14,36 +14,36 @@ _dummy = object()
 
 @contextmanager
 def current_function(f):
-    """Adds f to the module namespace as _stimeit_current_function, then
+    """Adds f to the module namespace as _rumble_current_function, then
     removes it when exiting this context."""
-    global _stimeit_current_function
-    _stimeit_current_function = f
+    global _rumble_current_function
+    _rumble_current_function = f
     yield
-    del _stimeit_current_function
+    del _rumble_current_function
 
 
-class SimpleTimeIt:
+class Rumble:
     """A class for running simple performance comparisons between functions.
 
-    Typically, you will use call_with to add a number of arguments and
+    Typically, you will use arguments to add a number of arguments and
     optional setup routines, and time_this to register a number of functions to
     be compared. Then, calling run will run each function with each argument
     list and print a table comparing the functions on each argument."""
 
     def __init__(self):
-        """Initializes a SimpleTimeIt object."""
+        """Initializes a Rumble object."""
         self._functions = []
         self._args_setups = []
 
-    def call_with(self, *args, **kwargs):
+    def arguments(self, *args, **kwargs):
         """Resisters a string as the argument list to the functions
         to be called as part of the performance comparisons. For instance, if
-        a SimpleTimeIt is specified as follows:
+        a Rumble is specified as follows:
 
-            from simpletimeit.stimeit import SimpleTimeIt
+            from Rumble.rumble import Rumble
 
-            st = SimpleTimeIt()
-            st.call_with('Eric', 3, x=10)
+            st = Rumble()
+            st.arguments('Eric', 3, x=10)
 
             @st.time_this
             foo(name, n, x=15):
@@ -53,7 +53,7 @@ class SimpleTimeIt:
 
             exec('foo({args})'.format(args="'Eric', 3, x=10"))
 
-        If 'args' is not a string, `call_with` will try to "do the right
+        If 'args' is not a string, `arguments` will try to "do the right
         thing" and convert it to a string. If that string, when executed, will
         not render value equal to 'args', this method will throw an error. So,
         for instance, `10` and `{a: 10, b: 15}` will work because
@@ -78,7 +78,7 @@ class SimpleTimeIt:
                 'be executed as Python code. Thus, arguments must either be '
                 'a string to be evaluated as the arguments to the timed '
                 'function, or be a value whose string representation '
-                'constructs an identical object. see the `call_with` '
+                'constructs an identical object. see the `arguments` '
                 'documentation for more details.'.format(args=args))
 
 
@@ -91,7 +91,7 @@ class SimpleTimeIt:
 
     def time_this(self, f):
         """A decorator. Registers the decorated function as a TimedFunction
-        with this SimpleTimeIt, leaving the function unchanged.
+        with this Rumble, leaving the function unchanged.
         """
         self._functions.append(f)
         return f
@@ -99,14 +99,14 @@ class SimpleTimeIt:
     def _prepared_setup(self, setup, func):
         """Generates the setup routine for a given timing run."""
         setup_template = (
-            'from simpletimeit.stimeit import _stimeit_current_function\n'
+            'from rumble.rumble import _rumble_current_function\n'
             '{setup}')
         if isinstance(setup, six.string_types):
             return setup_template.format(setup=setup)
         elif callable(setup):
             def prepared_setup_callable():
-                global _stimeit_current_function
-                _stimeit_current_function = func
+                global _rumble_current_function
+                _rumble_current_function = func
                 setup()
             return prepared_setup_callable
         else:
@@ -114,8 +114,8 @@ class SimpleTimeIt:
 
     def _run_setup_and_func_with_args(self, setup, func, args):
         # assumes args == eval(str(args)) or that args is a string
-        # (this property checked in call_with)
-        stmt_template = '_stimeit_current_function({args})'
+        # (this property checked in arguments)
+        stmt_template = '_rumble_current_function({args})'
         with current_function(func):
             return adaptiverun(stmt=stmt_template.format(args=args),
                                setup=self._prepared_setup(setup, func))
@@ -126,8 +126,8 @@ class SimpleTimeIt:
                      for func in self._functions)
 
     def run(self, report_function=generate_table, as_string=False):
-        """Runs each of the functions registered with this SimpleTimeIt using
-        each arguments-setup pair registered with this SimpleTimeIt.
+        """Runs each of the functions registered with this Rumble using
+        each arguments-setup pair registered with this Rumble.
 
         report_function should take a list of objects conforming to the
         Report API and return a string reporting on the comparison.
@@ -148,13 +148,13 @@ class SimpleTimeIt:
         return out.getvalue() if as_string else None
 
 
-_module_instance = SimpleTimeIt()
+_module_instance = Rumble()
 
 
 def reset():
     global _module_instance
-    _module_instance = SimpleTimeIt()
+    _module_instance = Rumble()
 
 time_this = _module_instance.time_this
-call_with = _module_instance.call_with
+arguments = _module_instance.arguments
 run = _module_instance.run
