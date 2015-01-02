@@ -1,14 +1,14 @@
 from functools import wraps
 
-from simpletimeit import stimeit
+from rumble import rumble
 
-prime_timer = stimeit.SimpleTimeIt()
+prime_timer = rumble.Rumble()
 
-prime_timer.call_with(10)
-prime_timer.call_with(100)
-prime_timer.call_with(1000)
+prime_timer.arguments(10)
+prime_timer.arguments(100)
+prime_timer.arguments(1000)
 
-@prime_timer.time_this
+@prime_timer.contender
 def check_all(n):
     result = []
     for i in range(2, n + 1):
@@ -16,7 +16,7 @@ def check_all(n):
             result.append(i)
     return result
 
-@prime_timer.time_this
+@prime_timer.contender
 def sieve(n):
     flags = [True for _ in range(n + 1)]
     flags[0] = flags[1] = False
@@ -28,7 +28,7 @@ def sieve(n):
 
     return [i for i, f in enumerate(flags) if f]
 
-@prime_timer.time_this
+@prime_timer.contender
 def memoized(n, _primes={}):
     result = []
     for i in range(2, n + 1):
@@ -38,4 +38,5 @@ def memoized(n, _primes={}):
             result.append(i)
     return result
 
-prime_timer.run()
+if __name__ == '__main__':
+    prime_timer.run()

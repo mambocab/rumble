@@ -1,6 +1,6 @@
 from __future__ import division
 
-from simpletimeit import adaptiverun
+from rumble import adaptiverun
 
 try:
     from unittest.mock import Mock, patch
@@ -29,8 +29,8 @@ def test_time_thresholds():
 
     for test_time, number in expected:
         new = lambda self, x: x / 10 * test_time
-        with patch('simpletimeit.adaptiverun.timeit.Timer.timeit', new=new):
-            repeat_patch = 'simpletimeit.adaptiverun.timeit.Timer.repeat'
+        with patch('rumble.adaptiverun.timeit.Timer.timeit', new=new):
+            repeat_patch = 'rumble.adaptiverun.timeit.Timer.repeat'
             repeat_mock = Mock(return_value=[1])
             with patch(repeat_patch, repeat_mock) as m:
                 r = adaptiverun.adaptiverun('pass', setup='pass')
@@ -40,7 +40,7 @@ def test_time_thresholds():
 
 def test_repeat_call():
     number, repeat = 12, 1
-    patch_string = 'simpletimeit.adaptiverun.timeit.Timer.repeat'
+    patch_string = 'rumble.adaptiverun.timeit.Timer.repeat'
     new = Mock(return_value=[1])
     with patch(patch_string, new=new) as m:
         adaptiverun.adaptiverun('pass', number=number, repeat=repeat)
@@ -49,7 +49,7 @@ def test_repeat_call():
 
 def test_return_value():
     number, repeat = 52, 2
-    patch_string = 'simpletimeit.adaptiverun.timeit.Timer.repeat'
+    patch_string = 'rumble.adaptiverun.timeit.Timer.repeat'
     new = Mock(return_value=[1])
     with patch(patch_string, new=new):
         r = adaptiverun.adaptiverun('pass', number=number, repeat=repeat)

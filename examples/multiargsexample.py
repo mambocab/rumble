@@ -1,20 +1,20 @@
 from functools import wraps
 
-from simpletimeit import stimeit
+from rumble import rumble
 
-st = stimeit.SimpleTimeIt()
+r = rumble.Rumble()
 
-st.call_with(10, 100)
-st.call_with(8000, 92833)
-st.call_with(898989, 1000000000001)
+r.arguments(10, 100)
+r.arguments(8000, 92833)
+r.arguments(898989, 1000000000001)
 
-@st.time_this
+@r.contender
 def divide(a, b):
     while b != 0:
         a, b = b, a % b
     return a
 
-@st.time_this
+@r.contender
 def subtract(a, b):
     while a != b:
         if a > b:
@@ -23,7 +23,7 @@ def subtract(a, b):
             b -= a
     return a
 
-@st.time_this
+@r.contender
 def recurse(a, b):
     if b == 0:
         return a
@@ -31,4 +31,4 @@ def recurse(a, b):
         return recurse(b, a % b)
 
 if __name__ == '__main__':
-    st.run()
+    r.run()
