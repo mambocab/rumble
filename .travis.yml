@@ -21,13 +21,15 @@ script:
   - py.test --cov rumble/report.py tests/test_report.py && coverage report --show-missing --fail-under=100
   - py.test --cov rumble/stimeit.py tests/test_stimeit.py && coverage report --show-missing --fail-under=100
   - py.test --cov rumble/utils.py tests/test_utils.py && coverage report --show-missing --fail-under=100
+
   # actually run tests and generate final coverage report
   - py.test --cov rumble && coverage report --show-missing --fail-under=100
+
   # also sure none of the examples die
   - pip install .
-  - {envpython} examples/example.py
-  - {envpython} examples/primeexample.py
-  - {envpython} examples/classexample.py
-  - {envpython} examples/multiargsexample.py
+  - python examples/example.py
+  - python examples/primeexample.py
+  - python examples/classexample.py
+  - python examples/multiargsexample.py
 
 after_success: coveralls
