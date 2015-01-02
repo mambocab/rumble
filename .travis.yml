@@ -25,7 +25,7 @@ script:
   - python examples/example.py
   - python examples/primeexample.py
   - python examples/classexample.py
-  - python examples/multiargsxample.py
+  - python examples/multiargsexample.py
   # finally, actually run tests
   - py.test --cov rumble && coverage report --show-missing --fail-under=100
 
