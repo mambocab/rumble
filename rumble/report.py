@@ -20,19 +20,18 @@ class SimpleTabulator():
         units, unit_divisor = self.units_and_divisor(smallest)
         # convert each result to its display value
         normalized_results = tuple(
-            (func, result._replace(best=result.best / unit_divisor))
+            result._replace(best=result.best / unit_divisor)
             for func, result in self._results)
 
-        table = tuple(self.get_row(func, result)
-                      for func, result in normalized_results)
+        table = tuple(map(self.get_row, normalized_results))
         return tabulate(table, tablefmt='simple', floatfmt='.2f',
                         headers=self.header(self._title, units))
 
     def get_row(self, func, result):
-        return (func.__name__,
-                result.best,
-                result.number,  # number of loops / repeat
-                result.repeat)
+        return (result.name,
+                result.timingdata.best,
+                result.timingdata.number,  # number of loops / repeat
+                result.timingdata.repeat)
 
     def format_title(self, title):
         max_len = 23
