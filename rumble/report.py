@@ -2,6 +2,7 @@ from __future__ import division
 
 from tabulate import tabulate
 
+
 class SimpleTabulator():
     def __init__(self, results, title):
         """Accepts an iterable of (function, timingreport) pairs and a title
@@ -34,7 +35,7 @@ class SimpleTabulator():
                 result.repeat)
 
     def format_title(self, title):
-        max_len=23
+        max_len = 23
         if len(title) <= max_len:
             return title
         ellipsis = '...'
@@ -52,6 +53,7 @@ class SimpleTabulator():
             if smallest >= div:
                 return name, div
         return 'usec', 1
+
 
 def generate_table(results, title):
     return SimpleTabulator(results, title).render_table()
