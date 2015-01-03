@@ -66,6 +66,20 @@ def test_header(empty_table):
     expected = (title, units, 'loops', 'best of')
     assert all(e == r for e, r in zip(expected, result))
 
+def test_format_title(empty_table):
+    title = 'a very long string for a table title'
+    assert empty_table.format_title(title) == 'a very long string f...'
+
+def test_format_title_doesnt_truncate_shorter_string(empty_table):
+    title = '23 chars of string, yes'
+    assert empty_table.format_title(title) == title
+
+def test_header_with_long_title(empty_table):
+    title, units = 'a very long string for a table title', 'usec'
+    result = empty_table.header(title, units)
+    expected = ('a very long string f...', units, 'loops', 'best of')
+    assert all(e == r for e, r in zip(expected, result))
+
 def test_unit_divisor(empty_table):
     for n in (.45, 2, 99, 999.999):
         assert ('usec', 1) == empty_table.units_and_divisor(n)
