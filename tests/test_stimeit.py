@@ -2,12 +2,12 @@ import pytest
 from six import string_types
 
 try:
-    from unittest.mock import Mock
+    from unittest.mock import MagicMock, Mock
 except ImportError:
-    from mock import Mock
+    from mock import MagicMock, Mock
 
 from rumble import rumble
-from rumble.datatypes import TimingReport
+from rumble.datatypes import Result, TimingReport
 
 slow = pytest.mark.slow
 
@@ -192,32 +192,41 @@ def test_run_setup_and_func_with_args_called_times(monkeypatch):
         st = rumble.Rumble()
         st._run_setup_and_func_with_args = Mock()
 
-        for func in (None for _ in range(n)):
+        for func in (lambda x: None for _ in range(n)):
+            func.__name__ = 'foo'
             st.contender(func)
         setup, func = Mock(), Mock()
         result = st._get_results(setup, None)
 
-        assert len(st._get_results(setup, None)) == n
+        assert len(tuple(st._get_results(setup, None))) == n
 
 # test functions in _get_results rv has correct function for beginning of each
 def test_get_results_functions_order(monkeypatch):
     monkeypatch.setattr(rumble, 'adaptiverun', Mock())
     st = rumble.Rumble()
 
-    funcs = [Mock(), Mock(), Mock(), Mock(), Mock()]
-    for f in funcs:
+    funcs = [MagicMock(), MagicMock(), MagicMock(), MagicMock(), MagicMock()]
+    for i, f in enumerate(funcs):
+        f.__name__ = str(i)
         st.contender(f)
 
-    assert [r[0] for r in st._get_results('pass', None)] == funcs
+    expected = [f.__name__ for f in funcs]
+    assert [r.name for r in st._get_results('pass', None)] == expected
 
 @pytest.fixture
 def mock_three_results():
-    def foo(): pass
-    def bar(): pass
-    def baz(): pass
-    data = ((foo, TimingReport(best=0.6152389320013754, number=1000000, repeat=3)),
-            (bar, TimingReport(best=10.568919159995858, number=100000, repeat=3)),
-            (baz, TimingReport(best=0.8228213680013141, number=1000000, repeat=3)))
+    data = (Result(name='foo',
+                   timingreport=TimingReport(best=0.6152389320013754,
+                                             number=1000000,
+                                             repeat=3)),
+            Result(name='bar',
+                   timingreport=TimingReport(best=10.568919159995858,
+                                             number=100000,
+                                             repeat=3)),
+            Result(name='baz',
+                   timingreport=TimingReport(best=0.8228213680013141,
+                                             number=1000000,
+                                             repeat=3)))
 
     expected = ("args: 'test'      usec    loops    best of\n"
                 '--------------  ------  -------  ---------\n'

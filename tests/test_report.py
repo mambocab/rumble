@@ -1,7 +1,7 @@
 import pytest
 
 from rumble import report
-from rumble.datatypes import TimingReport
+from rumble.datatypes import Result, TimingReport
 
 
 @pytest.fixture
@@ -13,24 +13,18 @@ def empty_table():
 def sample_reports():
     """a set of sample reports and the table that should be generated from
     them"""
-    def foo():
-        pass
-
-    def bar():
-        pass
-
-    def baz():
-        pass
-
-    reports = ((foo, TimingReport(best=25800.1657080008881,
-                                  number=1000,
-                                  repeat=3)),
-               (bar, TimingReport(best=13100.85698659945047,
-                                  number=10000,
-                                  repeat=3)),
-               (baz, TimingReport(best=1100.317414549994282,
-                                  number=100000,
-                                  repeat=3)))
+    reports = (Result(name='foo',
+                      timingreport=TimingReport(best=25800.1657080008881,
+                                                number=1000,
+                                                repeat=3)),
+               Result(name='bar',
+                      timingreport=TimingReport(best=13100.85698659945047,
+                                                number=10000,
+                                                repeat=3)),
+               Result(name='baz',
+                      timingreport=TimingReport(best=1100.317414549994282,
+                                                number=100000,
+                                                repeat=3)))
     expected = '\n'.join(('test      msec    loops    best of',
                           '------  ------  -------  ---------',
                           'foo      25.80     1000          3',
@@ -56,11 +50,10 @@ def test_generate_table(empty_table):
 
 
 def test_get_row(empty_table):
-    def foo():
-        pass
+    name = 'foo'
     timing = TimingReport(best=1, number=2, repeat=3)
-    result = empty_table.get_row(foo, timing)
-    expected = ('foo', 1, 2, 3)
+    result = empty_table.get_row(Result(name=name, timingreport=timing))
+    expected = (name, 1, 2, 3)
     assert all(e == r for e, r in zip(expected, result))
 
 

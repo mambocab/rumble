@@ -143,7 +143,8 @@ class Rumble:
             results = []
             title = 'args: {args}'.format(args=args)
 
-            results = self._get_results(setup, args)
+            results = tuple(self._get_results(setup, args))
+            print(results)
 
             print(report_function(results, title=title) + '\n', file=out)
         return out.getvalue() if as_string else None

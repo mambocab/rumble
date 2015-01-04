@@ -16,22 +16,24 @@ class SimpleTabulator():
             return ''
 
         # find the string for the units and the divisor to convert from usecs
-        smallest = min(result.best for function, result in self._results)
+        smallest = min(result.timingreport.best for result in self._results)
         units, unit_divisor = self.units_and_divisor(smallest)
         # convert each result to its display value
         normalized_results = tuple(
-            result._replace(best=result.best / unit_divisor)
-            for func, result in self._results)
+            result._replace(
+                timingreport=result.timingreport._replace(
+                    best=result.timingreport.best / unit_divisor))
+            for result in self._results)
 
         table = tuple(map(self.get_row, normalized_results))
         return tabulate(table, tablefmt='simple', floatfmt='.2f',
                         headers=self.header(self._title, units))
 
-    def get_row(self, func, result):
+    def get_row(self, result):
         return (result.name,
-                result.timingdata.best,
-                result.timingdata.number,  # number of loops / repeat
-                result.timingdata.repeat)
+                result.timingreport.best,
+                result.timingreport.number,  # number of loops / repeat
+                result.timingreport.repeat)
 
     def format_title(self, title):
         max_len = 23
