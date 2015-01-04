@@ -86,8 +86,12 @@ class Rumble:
             raise ValueError(
                 "'_setup' argument must be a string or callable.")
 
-        self._args_setups.append(ArgsAndSetup(args=str(arg_string),
-                                              setup=_setup))
+        self.arguments_string(arg_string, _setup)
+
+
+    def arguments_string(self, arg_string, _setup):
+        self._args_setups.append(ArgsAndSetup(args=arg_string, setup=_setup))
+
 
     def contender(self, f):
         """A decorator. Registers the decorated function as a TimedFunction
