@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 from contextlib import contextmanager
+import sys
 
 import six
 
@@ -136,7 +137,7 @@ class Rumble:
         If as_string is True, this function returns the table or tables
         generated as a string. Otherwise, it prints the tables to stdout and
         returns None."""
-        out = six.StringIO() if as_string else None
+        out = six.StringIO() if as_string else sys.stdout
 
         for x in self._args_setups:
             args, setup = x.args, x.setup

@@ -256,9 +256,6 @@ def test_run_and_print_return_value(capsys, mock_three_results):
     assert r.run() == None
 
 
-# capsys seems to be failing under pypy but not pypy2
-pypy2 = "sys.version_info[0] < 3 and hasattr(sys, 'pypy_translation_info')"
-@pytest.mark.xfail(pypy2)
 def test_run_and_print_print_result(capsys, mock_three_results):
     r = mock_three_results['rumble']
     r.arguments('test')
