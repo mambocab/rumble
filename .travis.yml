@@ -20,7 +20,7 @@ script:
   # each module should be completely covered by its test suite
   - py.test --cov rumble/adaptiverun.py tests/test_adaptiverun.py; coverage report --show-missing --fail-under=100
   - py.test --cov rumble/report.py tests/test_report.py && coverage report --show-missing --fail-under=100
-  - py.test --cov rumble/stimeit.py tests/test_stimeit.py && coverage report --show-missing --fail-under=100
+  - py.test --cov rumble/rumble.py tests/test_rumble.py && coverage report --show-missing --fail-under=100
   - py.test --cov rumble/utils.py tests/test_utils.py && coverage report --show-missing --fail-under=100
 
   # actually run tests and generate final coverage report

@@ -1,11 +1,12 @@
 from __future__ import print_function
 
 from contextlib import contextmanager
+import sys
 
 import six
 
 from .adaptiverun import adaptiverun
-from .datatypes import ArgsAndSetup
+from .datatypes import ArgsAndSetup, Result
 from .report import generate_table
 from .utils import repr_is_constructor, args_to_string
 
@@ -125,9 +126,10 @@ class Rumble:
                                setup=self._prepared_setup(setup, func))
 
     def _get_results(self, setup, args):
-        return tuple((func,
-                      self._run_setup_and_func_with_args(setup, func, args))
-                     for func in self._functions)
+        for func in self._functions:
+            yield Result(name=func.__name__,
+                         timingreport=self._run_setup_and_func_with_args(
+                            setup, func, args))
 
     def run(self, report_function=generate_table, as_string=False):
         """Runs each of the functions registered with this Rumble using
@@ -139,14 +141,14 @@ class Rumble:
         If as_string is True, this function returns the table or tables
         generated as a string. Otherwise, it prints the tables to stdout and
         returns None."""
-        out = six.StringIO() if as_string else None
+        out = six.StringIO() if as_string else sys.stdout
 
         for x in self._args_setups:
             args, setup = x.args, x.setup
             results = []
             title = 'args: {args}'.format(args=args)
 
-            results = self._get_results(setup, args)
+            results = tuple(self._get_results(setup, args))
 
             print(report_function(results, title=title) + '\n', file=out)
         return out.getvalue() if as_string else None
