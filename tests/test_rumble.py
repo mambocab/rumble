@@ -2,12 +2,12 @@ import pytest
 from six import string_types
 
 try:
-    from unittest.mock import MagicMock, Mock
+    from unittest.mock import MagicMock, Mock, call
 except ImportError:
-    from mock import MagicMock, Mock
+    from mock import MagicMock, Mock, call
 
 from rumble import rumble
-from rumble.datatypes import Result, TimingReport
+from rumble.datatypes import ArgsAndSetup, Result, TimingReport
 
 slow = pytest.mark.slow
 
@@ -114,6 +114,12 @@ def test_prepared_setup_string_result():
     assert r._prepared_setup(setup_string, lambda: None) == expected
 
 
+def test_arguments_string():
+    r = rumble.Rumble()
+    r.arguments_string('test', _setup='test2')
+    assert r._args_setups == [ArgsAndSetup(args='test', setup='test2')]
+
+
 def test_setup_error_on_invalid_type():
     r = rumble.Rumble()
     with pytest.raises(ValueError):
@@ -213,6 +219,7 @@ def test_get_results_functions_order(monkeypatch):
     expected = [f.__name__ for f in funcs]
     assert [res.name for res in r._get_results('pass', None)] == expected
 
+
 @pytest.fixture
 def mock_three_results():
     data = (Result(name='foo',
@@ -241,6 +248,20 @@ def mock_three_results():
         r.contender(lambda: None)
 
     return dict(rumble=r, expected=expected, data=data)
+
+
+def test_get_results_called_with_args_setups():
+    r = rumble.Rumble()
+    r._get_results = Mock(return_value=())
+
+    a_s = tuple(ArgsAndSetup(args=Mock(), setup=Mock()) for _ in range(3))
+    r._args_setups = a_s
+
+    r.run(report_function=Mock(return_value=''))
+
+    assert r._get_results.call_count == len(a_s)
+    for actual, expected in zip(r._get_results.call_args_list, a_s):
+        assert actual == call(expected.setup, expected.args)
 
 
 def test_run_as_string(mock_three_results):
