@@ -235,13 +235,12 @@ def mock_three_results():
                 'baz               0.82  1000000          3\n\n')
 
     r = rumble.Rumble()
-    r._get_results = Mock()
-    r._get_results.return_value = data
+    r._get_results = Mock(return_value=data)
 
     for _ in range(len(data)):
         r.contender(lambda: None)
 
-    return dict(rumble=r, expected=expected)
+    return dict(rumble=r, expected=expected, data=data)
 
 
 def test_run_as_string(mock_three_results):
@@ -268,10 +267,10 @@ def test_run_and_print_print_result(capsys, mock_three_results):
     assert out == mock_three_results['expected']
 
 
-def test_run_calls_report_function_times(capsys):
+def test_run_calls_report_function_times(capsys, mock_three_results):
     for n in (1, 2, 10, 500):
         r = rumble.Rumble()
-        r._get_results = Mock()
+        r._get_results = Mock(return_value=mock_three_results['data'])
         r.contender(None)
 
         for x in range(n):
