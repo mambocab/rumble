@@ -90,7 +90,7 @@ class Rumble:
         self.arguments_string(arg_string, _setup)
 
 
-    def arguments_string(self, arg_string, _setup):
+    def arguments_string(self, arg_string, _setup='pass'):
         self._args_setups.append(ArgsAndSetup(args=arg_string, setup=_setup))
 
 
