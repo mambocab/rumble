@@ -234,34 +234,34 @@ def mock_three_results():
                 'bar              10.57   100000          3\n'
                 'baz               0.82  1000000          3\n\n')
 
-    st = rumble.Rumble()
-    st._get_results = Mock()
-    st._get_results.return_value = data
+    r = rumble.Rumble()
+    r._get_results = Mock()
+    r._get_results.return_value = data
 
     for _ in range(len(data)):
-        st.contender(lambda: None)
+        r.contender(lambda: None)
 
-    return dict(st=st, expected=expected)
+    return dict(rumble=r, expected=expected)
 
 
 def test_run_as_string(mock_three_results):
-    st = mock_three_results['st']
-    st.arguments('test')
+    r = mock_three_results['rumble']
+    r.arguments('test')
 
-    assert st.run(as_string=True) == mock_three_results['expected']
+    assert r.run(as_string=True) == mock_three_results['expected']
 
 
 def test_run_and_print_return_value(capsys, mock_three_results):
-    st = mock_three_results['st']
-    st.arguments('test')
-    assert st.run() == None
+    r = mock_three_results['rumble']
+    r.arguments('test')
+    assert r.run() == None
 
 
 # capsys seems to be failing under pypy but not pypy2
 pypy2 = "sys.version_info[0] < 3 and hasattr(sys, 'pypy_translation_info')"
 @pytest.mark.xfail(pypy2)
 def test_run_and_print_print_result(capsys, mock_three_results):
-    st = mock_three_results['st']
+    st = mock_three_results['rumble']
     st.arguments('test')
     st.run()
     out, _ = capsys.readouterr()
