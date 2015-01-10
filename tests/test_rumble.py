@@ -269,7 +269,7 @@ def test_run_and_print_print_result(capsys, mock_three_results):
 
 
 def test_run_calls_report_function_times(capsys):
-    for n in (2, 10):
+    for n in (1, 2, 10, 500):
         st = rumble.Rumble()
         st._get_results = Mock()
         st.contender(None)
