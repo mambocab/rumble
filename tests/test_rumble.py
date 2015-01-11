@@ -117,7 +117,9 @@ def test_prepared_setup_string_result():
 def test_arguments_string():
     r = rumble.Rumble()
     r.arguments_string('test', _setup='test2')
-    assert r._args_setups == [ArgsAndSetup(args='test', setup='test2')]
+    assert r._args_setups[0].args == 'test'
+    assert r._args_setups[0].setup == 'test2'
+    assert len(r._args_setups) == 1
 
 
 def test_setup_error_on_invalid_type():
@@ -217,7 +219,7 @@ def test_get_results_functions_order(monkeypatch):
         r.contender(f)
 
     expected = [f.__name__ for f in funcs]
-    assert [res.name for res in r._get_results('pass', None)] == expected
+    assert [res.name for res in r._get_results('pass', 'pass')] == expected
 
 
 @pytest.fixture
@@ -254,14 +256,16 @@ def test_get_results_called_with_args_setups():
     r = rumble.Rumble()
     r._get_results = Mock(return_value=())
 
-    a_s = tuple(ArgsAndSetup(args=Mock(), setup=Mock()) for _ in range(3))
+    a_s = tuple(ArgsAndSetup(args=Mock(),
+                             setup=Mock(),
+                             name=Mock()) for _ in range(3))
     r._args_setups = a_s
 
     r.run(report_function=Mock(return_value=''))
 
     assert r._get_results.call_count == len(a_s)
     for actual, expected in zip(r._get_results.call_args_list, a_s):
-        assert actual == call(expected.setup, expected.args)
+        assert actual == call(expected.args, expected.setup)
 
 
 def test_run_as_string(mock_three_results):
@@ -300,16 +304,70 @@ def test_run_calls_report_function_times(capsys, mock_three_results):
         assert report_function.call_count == n
 
 
-@slow
-def test_run_doesnt_die():
+# test that reset gives you a new _module_instance
+def test_module_instance():
+    r = rumble._module_instance
+    assert isinstance(r, rumble.Rumble)
+
+    rumble.reset()
+
+    assert isinstance(rumble._module_instance, rumble.Rumble)
+    assert r is not rumble._module_instance
+
+
+def test_named_argument_string():
     r = rumble.Rumble()
+    args, setup, name = 'args', 'setup', 'name'
+    r.arguments_string(args, _setup=setup, _name=name)
+    assert r._args_setups[0].args == args
+    assert r._args_setups[0].setup == setup
+    assert r._args_setups[0].name == name
 
-    @r.contender
-    def foo(x):
-        pass
 
-    r.arguments(2)
-    r.run()
+def test_named_argument_string_default_args():
+    r = rumble.Rumble()
+    args = 'args'
+    r.arguments_string(args)
+    assert r._args_setups[0].setup == 'pass'
+    assert r._args_setups[0].name == None
+
+
+def test_adding_arguments_with_no_name():
+    r = rumble.Rumble()
+    r.arguments(1, 2, 3)
+    assert r._args_setups[0].name == None
+
+
+def test_adding_arguments_with_name():
+    r = rumble.Rumble()
+    name = 'lol'
+    r.arguments(1, 2, 3, _name=name)
+    assert r._args_setups[0].name == name
+
+
+def test_calling_report_function_with_default_name():
+    r = rumble.Rumble()
+    r.arguments(1, 2, 3)
+    r.contender(lambda x: None)
+    r._get_results = Mock(return_value=())
+    m = Mock(return_value='')
+
+    r.run(report_function=m)
+
+    assert m.called_with(title='args: 1, 2, 3')
+
+
+def test_calling_report_function_with_specified_name():
+    r = rumble.Rumble()
+    name = 'test'
+    r.arguments(1, 2, 3, _name=name)
+    r.contender(lambda x: None)
+    r._get_results = Mock(return_value=())
+    m = Mock(return_value='')
+
+    r.run(report_function=m)
+
+    assert m.called_with(title=name)
 
 
 @slow
@@ -325,12 +383,3 @@ def test_run_doesnt_die():
     rumble.reset()
 
 
-# test that reset gives you a new _module_instance
-def test_module_instance():
-    r = rumble._module_instance
-    assert isinstance(r, rumble.Rumble)
-
-    rumble.reset()
-
-    assert isinstance(rumble._module_instance, rumble.Rumble)
-    assert r is not rumble._module_instance
